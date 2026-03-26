@@ -521,7 +521,343 @@ set +a
 
 ---
 
-## 十七、一个已经验证过的真实例子
+## 十七、如果你要接到 OpenClaw，应该怎么配
+
+这一段是专门写给：
+
+- 已经在用 OpenClaw 的人
+- 想把这个网关直接接进 OpenClaw 的人
+- 不想只停留在 curl 演示，而是想让机器人真正跑起来的人
+
+你可以先把 OpenClaw 理解成：
+
+> 一个会帮你把模型、渠道、工具、会话都串起来的“机器人外壳”。
+
+而这个仓库里的网关，则是：
+
+> OpenClaw 背后要连的模型接口。
+
+也就是说，关系是：
+
+```text
+OpenClaw -> 你的 OpenAI-compatible 网关 -> 上游模型
+```
+
+---
+
+## 十八、OpenClaw 最小配置长什么样
+
+OpenClaw 的配置文件通常在：
+
+```text
+~/.openclaw/openclaw.json
+```
+
+如果你要把这个网关接到 OpenClaw，最小思路就是两件事：
+
+1. 配一个 provider
+2. 把默认模型指到这个 provider
+
+一个最小可用示例如下：
+
+```json
+{
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "sublb": {
+        "baseUrl": "https://your-domain.example.com/v1",
+        "apiKey": "your_api_key_here",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "gpt-5.4",
+            "name": "GPT-5.4 via SubLB",
+            "input": ["text", "image"]
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "sublb/gpt-5.4"
+      },
+      "models": {
+        "sublb/gpt-5.4": {}
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "model": "sublb/gpt-5.4"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 十九、这里每一项是什么意思
+
+小白最怕的不是配置多，而是看不懂每个字段干嘛。
+
+下面我直接翻译成人话。
+
+### `baseUrl`
+
+```json
+"baseUrl": "https://your-domain.example.com/v1"
+```
+
+意思是：
+
+> OpenClaw 以后发请求，就往这个地址打。
+
+注意这里一般要带上 `/v1`。
+
+很多人会漏掉 `/v1`，然后出现：
+
+- 404
+- 路由不对
+- 看起来像接口挂了
+
+其实只是路径写错了。
+
+---
+
+### `apiKey`
+
+```json
+"apiKey": "your_api_key_here"
+```
+
+意思是：
+
+> 调这个网关时要带的密钥。
+
+如果 key 不对，最常见就是：
+
+- 401
+- 403
+
+---
+
+### `api`
+
+```json
+"api": "openai-completions"
+```
+
+这一项非常重要。
+
+它的意思不是“你模型是什么”，而是：
+
+> OpenClaw 用哪一种 OpenAI 风格协议去跟你的网关讲话。
+
+对于大多数新手场景，**建议优先用**：
+
+```json
+"api": "openai-completions"
+```
+
+原因很简单：
+
+- 更稳
+- 更直观
+- 更接近大家熟悉的 `chat/completions`
+- 很多兼容网关对这套支持更完整
+
+如果你不确定，先别折腾 `openai-responses`。
+
+**先把 `openai-completions` 跑通再说。**
+
+---
+
+### `models`
+
+```json
+"models": [
+  {
+    "id": "gpt-5.4",
+    "name": "GPT-5.4 via SubLB",
+    "input": ["text", "image"]
+  }
+]
+```
+
+意思是：
+
+> 告诉 OpenClaw：这个 provider 下面有哪些模型可以选。
+
+其中：
+
+- `id`：真实模型名，发请求时会用到
+- `name`：展示名，给人看的
+- `input`：这个模型支持什么输入类型
+
+---
+
+### `primary`
+
+```json
+"primary": "sublb/gpt-5.4"
+```
+
+意思是：
+
+> 默认就用这个模型。
+
+如果你不写默认模型，后面有些 agent / channel 启动时就可能不知道该调谁。
+
+---
+
+## 二十、为什么推荐 OpenClaw 先走 `openai-completions`
+
+这是给小白的经验结论，不讲虚的，直接讲实战：
+
+很多 OpenAI-compatible 网关虽然嘴上说兼容 OpenAI，
+但实际上常见情况是：
+
+- `chat/completions` 能用
+- `responses` 不一定稳
+- 有的甚至对 `responses` 只做了半兼容
+
+所以如果你是第一次接 OpenClaw：
+
+### 最稳的起手式
+
+- 接口先测：`/v1/chat/completions`
+- OpenClaw 配置先写：`openai-completions`
+
+这条路线最不容易翻车。
+
+---
+
+## 二十一、推荐的验证顺序
+
+如果你要把它接进 OpenClaw，建议按这个顺序来：
+
+### 第一步：先用 curl 验证网关本身通不通
+
+```bash
+./examples/curl/chat_json.sh
+```
+
+先确认：
+
+- 200
+- `application/json`
+- 正常返回模型内容
+
+### 第二步：再写 OpenClaw 配置
+
+改：
+
+```text
+~/.openclaw/openclaw.json
+```
+
+把 provider 和默认模型加进去。
+
+### 第三步：重启 OpenClaw gateway
+
+如果你在 macOS 上本地跑 OpenClaw，最省事的方式有两种：
+
+#### 方式 1：直接从 OpenClaw Mac App 里重启
+
+适合纯小白。
+你不用先研究 launchctl，直接在 OpenClaw 的 Mac 应用里重启 gateway 就行。
+
+#### 方式 2：用仓库自带脚本重启
+
+如果你本地就有 OpenClaw 源码仓库，可以用：
+
+```bash
+scripts/restart-mac.sh
+```
+
+重启完以后，建议马上做一次状态确认：
+
+```bash
+openclaw channels status --probe
+```
+
+如果你想进一步确认端口有没有起来，也可以看：
+
+```bash
+ss -ltnp | rg 18789
+```
+
+你不用死记命令，记住原则就行：
+
+> **改完配置以后，一定要重启 gateway；重启以后，一定要做一次最小状态检查。**
+
+### 第四步：再发一条最小测试消息
+
+测试内容建议非常简单，比如：
+
+```text
+Reply with exactly pong and nothing else.
+```
+
+这样最容易判断：
+
+- 到底是配置问题
+- 还是模型回复内容太复杂
+- 还是接口根本没打通
+
+---
+
+## 二十二、给 OpenClaw 用户的最小测试思路
+
+如果你已经把配置写好了，接下来你最需要验证的是：
+
+> **OpenClaw 到底有没有真的用上你这个 provider。**
+
+最简单的办法就是：
+
+1. 看默认模型是不是你写的那个
+2. 看日志里有没有对应 provider / model
+3. 发一条极短测试消息，看是否稳定返回
+
+你不要一上来就发长文章任务。
+
+小白最容易犯的错就是：
+
+- 配置刚写完
+- 还没做最小验证
+- 就直接上复杂任务
+- 然后出了问题也不知道是哪一层坏了
+
+所以记住一句话：
+
+> **先测通，再测复杂。**
+
+---
+
+## 二十三、一个已经验证过的实战经验
+
+在真实测试里，`/v1/chat/completions` 这条链路通常比 `responses` 更适合作为第一步验收口。
+
+也就是说，如果你的目标是：
+
+- 先让 OpenClaw 跑起来
+- 先让机器人能稳定回复
+- 先给小白一个能照抄的配置
+
+那建议你优先采用：
+
+- 网关：`/v1/chat/completions`
+- OpenClaw：`api = openai-completions`
+
+这是更稳的入门路径。
+
+---
+
+## 二十四、一个已经验证过的真实例子
 
 我们已经实测过下面这类调用是可行的：
 
@@ -534,7 +870,7 @@ set +a
 
 ---
 
-## 十八、注意事项
+## 二十五、注意事项
 
 1. **不要把真实 `.env` 提交到 GitHub。**
 2. 公开仓库里只保留 `.env.example`。
@@ -544,7 +880,7 @@ set +a
 
 ---
 
-## 十九、给小白的最终口诀
+## 二十六、给小白的最终口诀
 
 记住下面三句就够用了：
 
