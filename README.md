@@ -811,7 +811,115 @@ Reply with exactly pong and nothing else.
 
 ---
 
-## 二十二、给 OpenClaw 用户的最小测试思路
+## 二十二、配完以后，在 OpenClaw 里到底怎么用
+
+很多小白配完 `openclaw.json` 以后，下一句就会问：
+
+> 配置我会抄了，那我接下来到底怎么发消息？
+
+这里直接给你最实用的 3 种方式。
+
+### 方式 1：直接本地打一条 agent 消息
+
+这是最适合验收模型链路的方式。
+
+```bash
+openclaw agent --message "Reply with exactly pong and nothing else."
+```
+
+你可以把它理解成：
+
+> 不经过复杂业务，先让 OpenClaw 直接调用一次默认模型。
+
+如果你前面把默认模型设成了：
+
+```json
+"primary": "sublb/gpt-5.4"
+```
+
+那这条命令就会优先走你刚刚配置的这个模型。
+
+### 方式 2：临时指定模型，强制走你这个 provider
+
+如果你怕默认模型没切过去，那就直接手动指定：
+
+```bash
+openclaw agent --message "Reply with exactly pong and nothing else." --model sublb/gpt-5.4
+```
+
+这条命令特别适合排查这种情况：
+
+- 你怀疑默认模型没生效
+- 你机器上还有别的 provider
+- 你想明确验证 `sublb/gpt-5.4` 这条链路本身是不是通的
+
+小白记忆版：
+
+> **默认模型不放心，就用 `--model` 明着点名。**
+
+### 方式 3：如果你已经接了渠道，就从渠道发测试消息
+
+如果你的 Telegram、iMessage、WhatsApp 之类渠道已经配好了，也可以直接发一条测试消息：
+
+```bash
+openclaw message send --target +15555550123 --message "Hello from OpenClaw"
+```
+
+这条命令更像是在测“完整机器人链路”，也就是：
+
+```text
+渠道 -> OpenClaw -> 你的网关 -> 上游模型 -> 再回到渠道
+```
+
+但对于小白来说，**第一轮还是建议先测 `openclaw agent --message ...`**。
+
+因为它更短、更直接、更容易定位问题。
+
+---
+
+## 二十三、怎么判断 OpenClaw 有没有真的走到你的网关
+
+这也是小白最常问的问题：
+
+> 我明明配了 `sublb`，那 OpenClaw 到底有没有真的用它？
+
+建议你按下面顺序看。
+
+### 1）先看网关和渠道整体状态
+
+```bash
+openclaw channels status --probe
+```
+
+这条命令主要用来看：
+
+- gateway 是不是活着
+- 渠道是不是连着
+- 当前本地配置有没有明显异常
+
+### 2）再看健康状态
+
+```bash
+openclaw health
+```
+
+如果这里已经报认证没配、provider 异常、网关没起来，
+那你就别急着怪模型，先把基础状态修好。
+
+### 3）需要贴给别人排查时，用这条
+
+```bash
+openclaw status --all
+```
+
+这条很适合做“可复制的排查信息”。
+
+也就是说，如果你要找同事、找维护者、或者以后让 AI 帮你排查，
+这条输出通常最有价值。
+
+---
+
+## 二十四、给 OpenClaw 用户的最小测试思路
 
 如果你已经把配置写好了，接下来你最需要验证的是：
 
@@ -838,7 +946,7 @@ Reply with exactly pong and nothing else.
 
 ---
 
-## 二十三、一个已经验证过的实战经验
+## 二十五、一个已经验证过的实战经验
 
 在真实测试里，`/v1/chat/completions` 这条链路通常比 `responses` 更适合作为第一步验收口。
 
@@ -857,7 +965,7 @@ Reply with exactly pong and nothing else.
 
 ---
 
-## 二十四、一个已经验证过的真实例子
+## 二十六、一个已经验证过的真实例子
 
 我们已经实测过下面这类调用是可行的：
 
@@ -870,7 +978,7 @@ Reply with exactly pong and nothing else.
 
 ---
 
-## 二十五、注意事项
+## 二十七、注意事项
 
 1. **不要把真实 `.env` 提交到 GitHub。**
 2. 公开仓库里只保留 `.env.example`。
@@ -880,7 +988,7 @@ Reply with exactly pong and nothing else.
 
 ---
 
-## 二十六、给小白的最终口诀
+## 二十八、给小白的最终口诀
 
 记住下面三句就够用了：
 
