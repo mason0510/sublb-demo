@@ -1,0 +1,115 @@
+{
+  "status": 200,
+  "headers": {
+    "Date": "Sun, 26 Apr 2026 01:17:18 GMT",
+    "Content-Type": "application/json; charset=utf-8",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "Content-Encoding": "gzip",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "vary": "origin, access-control-request-method, access-control-request-headers, Accept-Encoding",
+    "via": "1.1 Caddy",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-request-id": "0a34794b-2e70-4c64-b679-6f5bb963e6e5",
+    "cf-cache-status": "DYNAMIC",
+    "Nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+    "Report-To": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=oQ8hD69K6D8WvwzXa%2BJnR0gB5mcxgSDOU74fSAzUQE71CyEhL24g3eWmI4ruQZ0l8G9xdYLizwe0Dpz%2B90LZlxSqY33qhnsWY0WbYywalqvVR1WidwK3oYqzw43Oc%2BfPh3WVdA%3D%3D\"}]}",
+    "Server": "cloudflare",
+    "CF-RAY": "9f21bf341ab6d938-LAX"
+  },
+  "body": {
+    "background": false,
+    "completed_at": 1777166238,
+    "created_at": 1777166237,
+    "error": null,
+    "frequency_penalty": 0.0,
+    "id": "resp_069964fa87c0e8e10169ed679dae208196aa82865c8d78a9f3",
+    "incomplete_details": null,
+    "instructions": "You are a helpful coding assistant.",
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "metadata": {},
+    "model": "gpt-5.5",
+    "moderation": null,
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_069964fa87c0e8e10169ed679e26c48196990f857022c74dbc",
+        "summary": [],
+        "type": "reasoning"
+      },
+      {
+        "content": [
+          {
+            "annotations": [],
+            "logprobs": [],
+            "text": "OK-OPENAI-RESPONSES",
+            "type": "output_text"
+          }
+        ],
+        "id": "msg_069964fa87c0e8e10169ed679e5f1c8196b46292199f79c944",
+        "phase": "final_answer",
+        "role": "assistant",
+        "status": "completed",
+        "type": "message"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "presence_penalty": 0.0,
+    "previous_response_id": null,
+    "prompt_cache_key": "587e37fe-d352-4439-a228-914305513011",
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "effort": "medium",
+      "summary": null
+    },
+    "safety_identifier": "user-r9z8LyBzdcE6Sc17xhtLLIPg",
+    "service_tier": "default",
+    "status": "completed",
+    "store": false,
+    "temperature": 1.0,
+    "text": {
+      "format": {
+        "type": "text"
+      },
+      "verbosity": "medium"
+    },
+    "tool_choice": "auto",
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    },
+    "tools": [],
+    "top_logprobs": 0,
+    "top_p": 0.98,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 28,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 23,
+      "output_tokens_details": {
+        "reasoning_tokens": 9
+      },
+      "total_tokens": 51
+    },
+    "user": null
+  }
+}

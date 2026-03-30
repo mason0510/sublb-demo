@@ -1,0 +1,50 @@
+{
+  "status": 200,
+  "headers": {
+    "Date": "Sun, 26 Apr 2026 01:17:57 GMT",
+    "Content-Type": "application/json; charset=utf-8",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "via": "1.1 Caddy",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-request-id": "7708f072-35ee-4d41-8846-772a8db9124b",
+    "cf-cache-status": "DYNAMIC",
+    "Nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+    "Report-To": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=cBLiA0sS%2FPkLX4pC8wLJ1iRExpg%2F4TpMBJZKgK0JCla%2BnQWQzkkI8tnoY8dSWnu8%2FG4E%2FOmfH2vGUW1tMUmmXvQOo8D67i%2BGnKU4ST%2BEbkNzh2BVfPkKU3fMpW8R8XsVpq6bSg%3D%3D\"}]}",
+    "Content-Encoding": "br",
+    "Server": "cloudflare",
+    "CF-RAY": "9f21c03478e2d938-LAX"
+  },
+  "body": {
+    "data": [
+      {
+        "id": "grok-4.1-fast",
+        "object": "model",
+        "created": 0,
+        "owned_by": "grok",
+        "type": "model",
+        "display_name": "grok-4.1-fast"
+      },
+      {
+        "id": "grok-imagine-1.0",
+        "object": "model",
+        "created": 0,
+        "owned_by": "grok",
+        "type": "model",
+        "display_name": "grok-imagine-1.0"
+      },
+      {
+        "id": "grok-imagine-1.0-fast",
+        "object": "model",
+        "created": 0,
+        "owned_by": "grok",
+        "type": "model",
+        "display_name": "grok-imagine-1.0-fast"
+      }
+    ],
+    "object": "list"
+  }
+}

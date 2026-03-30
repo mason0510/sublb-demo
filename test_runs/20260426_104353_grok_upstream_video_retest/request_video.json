@@ -1,0 +1,7 @@
+{
+  "model": "grok-imagine-1.0-video",
+  "prompt": "真实复测：一只橘猫坐在发光服务器机柜前，镜头轻微推进，电影感，6秒",
+  "size": "1792x1024",
+  "seconds": 6,
+  "quality": "standard"
+}

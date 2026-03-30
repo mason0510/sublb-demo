@@ -1,0 +1,38 @@
+{
+  "status": 200,
+  "headers": {
+    "Date": "Sun, 26 Apr 2026 01:18:11 GMT",
+    "Content-Type": "application/json; charset=utf-8",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "via": "1.1 Caddy, 1.1 Caddy",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-request-id": "0c1ead8f-1aba-4873-9910-f920f663a266",
+    "cf-cache-status": "DYNAMIC",
+    "Nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+    "Report-To": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=YAIY5U%2F%2FkhzKyBMNNaWpXcB1YS2NgGJKJtSH4CWxCNMV%2B2eQ%2BNfTDbX%2FH%2FXNA1usKtI1j3%2FaZT%2BiRpe1H1T2DI6ZXQbPTtFjMLo5AnszBPIYtTdgUDS4ubVq7zX2kNdQXB610w%3D%3D\"}]}",
+    "Content-Encoding": "br",
+    "Server": "cloudflare",
+    "CF-RAY": "9f21c06ffac7d938-LAX"
+  },
+  "body": {
+    "created": 1777166291,
+    "data": [
+      {
+        "url": "https://grok74.tap365.org/v1/files/image/19b553a0-e712-4503-9661-814617c12c96.jpg"
+      }
+    ],
+    "usage": {
+      "total_tokens": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "input_tokens_details": {
+        "text_tokens": 0,
+        "image_tokens": 0
+      }
+    }
+  }
+}

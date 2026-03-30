@@ -1,0 +1,364 @@
+{
+  "/v1/videos": {
+    "post": {
+      "tags": [
+        "Videos"
+      ],
+      "summary": "Create Video",
+      "description": "Videos create endpoint.\nSupports JSON and multipart/form-data using only reverse-supported params.",
+      "operationId": "create_video_v1_videos_post",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "prompt": {
+                  "type": "string",
+                  "title": "Prompt",
+                  "description": "Video prompt"
+                },
+                "model": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Model",
+                  "description": "Model id",
+                  "default": "grok-imagine-1.0-video"
+                },
+                "size": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Size",
+                  "description": "Output size",
+                  "default": "1792x1024"
+                },
+                "seconds": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Seconds",
+                  "description": "Video length in seconds",
+                  "default": 6
+                },
+                "quality": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Quality",
+                  "description": "Quality: standard/high",
+                  "default": "standard"
+                },
+                "image_reference": {
+                  "anyOf": [
+                    {},
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Image Reference",
+                  "description": "Structured image reference"
+                },
+                "input_reference": {
+                  "anyOf": [
+                    {},
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Input Reference",
+                  "description": "Multipart input reference file"
+                }
+              },
+              "type": "object",
+              "required": [
+                "prompt"
+              ],
+              "title": "VideoCreateRequest",
+              "description": "Supported create params only; unknown fields are ignored by design."
+            }
+          },
+          "multipart/form-data": {
+            "schema": {
+              "properties": {
+                "prompt": {
+                  "type": "string"
+                },
+                "model": {
+                  "type": "string",
+                  "default": "grok-imagine-1.0-video"
+                },
+                "size": {
+                  "type": "string",
+                  "default": "1792x1024"
+                },
+                "seconds": {
+                  "type": "integer",
+                  "default": 6
+                },
+                "quality": {
+                  "type": "string",
+                  "default": "standard"
+                },
+                "image_reference": {
+                  "type": "string",
+                  "description": "JSON string for image_reference object"
+                },
+                "input_reference": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "type": "object",
+              "required": [
+                "prompt"
+              ]
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "API Key": []
+        }
+      ]
+    }
+  },
+  "/v1/video/extend": {
+    "post": {
+      "tags": [
+        "Videos"
+      ],
+      "summary": "Extend Video",
+      "description": "Extension endpoint (non-OpenAI-compatible direct mapping).",
+      "operationId": "extend_video_v1_video_extend_post",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VideoExtendDirectRequest"
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "API Key": []
+        }
+      ]
+    }
+  },
+  "/v1/files/video/{filename}": {
+    "get": {
+      "tags": [
+        "Files"
+      ],
+      "summary": "Get Video",
+      "description": "获取视频文件",
+      "operationId": "get_video_v1_files_video__filename__get",
+      "parameters": [
+        {
+          "name": "filename",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "title": "Filename"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/v1/function/video/start": {
+    "post": {
+      "summary": "Function Video Start",
+      "operationId": "function_video_start_v1_function_video_start_post",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VideoStartRequest"
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "API Key": []
+        }
+      ]
+    }
+  },
+  "/v1/function/video/sse": {
+    "get": {
+      "summary": "Function Video Sse",
+      "operationId": "function_video_sse_v1_function_video_sse_get",
+      "parameters": [
+        {
+          "name": "task_id",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "",
+            "title": "Task Id"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/v1/function/video/stop": {
+    "post": {
+      "summary": "Function Video Stop",
+      "operationId": "function_video_stop_v1_function_video_stop_post",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/VideoStopRequest"
+            }
+          }
+        },
+        "required": true
+      },
+      "responses": {
+        "200": {
+          "description": "Successful Response",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          }
+        },
+        "422": {
+          "description": "Validation Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          }
+        }
+      },
+      "security": [
+        {
+          "API Key": []
+        }
+      ]
+    }
+  }
+}

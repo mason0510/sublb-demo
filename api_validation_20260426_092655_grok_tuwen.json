@@ -1,0 +1,62 @@
+{
+  "timestamp": "20260426_092655",
+  "base_url": "https://sub-lb.tap365.org",
+  "provider": "grok_tuwen",
+  "checks": [
+    {
+      "check": "grok_tuwen_models",
+      "status": 200,
+      "curl_exit": 0,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "grok/20260426_092655_grok_tuwen_models.json",
+      "output_headers": "grok/20260426_092655_grok_tuwen_models.headers.txt",
+      "body_preview": "{\"data\":[{\"id\":\"grok-4.1-fast\",\"object\":\"model\",\"created\":0,\"owned_by\":\"grok\",\"type\":\"model\",\"display_name\":\"grok-4.1-fast\"},{\"id\":\"grok-imagine-1.0\",\"object\":\"model\",\"created\":0,\"owned_by\":\"grok\",\"type\":\"model\",\"display_name\":\"grok-imagine"
+    },
+    {
+      "check": "grok_tuwen_chat_completions",
+      "status": 200,
+      "curl_exit": 0,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "grok/20260426_092655_grok_tuwen_chat_completions.json",
+      "output_headers": "grok/20260426_092655_grok_tuwen_chat_completions.headers.txt",
+      "body_preview": "{\"id\":\"resp_ce5a14c82ff7482688a7582b\",\"object\":\"chat.completion\",\"created\":1777166915,\"model\":\"grok-4.1-fast\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\\u003cthink\\u003e\\nThinking about your request\\n\\u003c/think\\u003e\\"
+    },
+    {
+      "check": "grok_tuwen_responses",
+      "status": 200,
+      "curl_exit": 0,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "grok/20260426_092655_grok_tuwen_responses.json",
+      "output_headers": "grok/20260426_092655_grok_tuwen_responses.headers.txt",
+      "body_preview": "{\"id\":\"resp_4ce2fcfc62c8470fbd603f5f\",\"object\":\"response\",\"created_at\":1777166919,\"completed_at\":1777166919,\"status\":\"completed\",\"error\":null,\"incomplete_details\":null,\"instructions\":\"You are a helpful coding assistant.\",\"max_output_tokens\""
+    },
+    {
+      "check": "grok_tuwen_images_generations",
+      "status": 200,
+      "curl_exit": 0,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "grok/20260426_092655_grok_tuwen_images_generations.json",
+      "output_headers": "grok/20260426_092655_grok_tuwen_images_generations.headers.txt",
+      "body_preview": "{\"created\":1777166924,\"data\":[{\"url\":\"https://grok74.tap365.org/v1/files/image/e121edfe-86b3-4c7f-8d1c-9d52fecda8e5.jpg\"}],\"usage\":{\"total_tokens\":0,\"input_tokens\":0,\"output_tokens\":0,\"input_tokens_details\":{\"text_tokens\":0,\"image_tokens\":0",
+      "image_url": "https://grok74.tap365.org/v1/files/image/e121edfe-86b3-4c7f-8d1c-9d52fecda8e5.jpg",
+      "image_file": "grok/grok-imagine-1.0_20260426_092655.jpg"
+    },
+    {
+      "check": "grok_tuwen_sora_models",
+      "status": 200,
+      "curl_exit": 0,
+      "content_type": "text/html; charset=utf-8",
+      "output_json": "grok/20260426_092655_grok_tuwen_sora_models.json",
+      "output_headers": "grok/20260426_092655_grok_tuwen_sora_models.headers.txt",
+      "body_preview": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"/logo.png?v=20260326-2\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Sub2API"
+    },
+    {
+      "check": "grok_tuwen_sora_chat_completions",
+      "status": 405,
+      "curl_exit": 0,
+      "content_type": "",
+      "output_json": "grok/20260426_092655_grok_tuwen_sora_chat_completions.json",
+      "output_headers": "grok/20260426_092655_grok_tuwen_sora_chat_completions.headers.txt"
+    }
+  ]
+}

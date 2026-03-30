@@ -1,0 +1,88 @@
+{
+  "timestamp": "20260426_091533",
+  "base_url": "https://sub-lb.tap365.org",
+  "checks": [
+    {
+      "provider": "openai",
+      "check": "models",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "openai/20260426_091533_models.json"
+    },
+    {
+      "provider": "openai",
+      "check": "chat_completions",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "openai/20260426_091533_chat_completions.json",
+      "text_preview": "OK-OPENAI"
+    },
+    {
+      "provider": "openai",
+      "check": "responses",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "openai/20260426_091533_responses.json",
+      "text_preview": "OK-OPENAI-RESPONSES"
+    },
+    {
+      "provider": "openai",
+      "check": "images_generations",
+      "status": 502,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "openai/20260426_091533_images_generations.json"
+    },
+    {
+      "provider": "openai",
+      "check": "images_generations_decode",
+      "status": "decode_failed",
+      "error": "'data'"
+    },
+    {
+      "provider": "grok",
+      "check": "models",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "grok/20260426_091533_models.json"
+    },
+    {
+      "provider": "grok",
+      "check": "chat_completions",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "grok/20260426_091533_chat_completions.json",
+      "text_preview": "OK-GROK"
+    },
+    {
+      "provider": "grok",
+      "check": "responses",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "grok/20260426_091533_responses.json",
+      "text_preview": "OK-GROK-RESPONSES"
+    },
+    {
+      "provider": "grok",
+      "check": "images_generations",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "output_json": "grok/20260426_091533_images_generations.json",
+      "image_file": "grok/grok-imagine-1.0_20260426_091533.jpg",
+      "image_url": "https://grok74.tap365.org/v1/files/image/19b553a0-e712-4503-9661-814617c12c96.jpg"
+    },
+    {
+      "provider": "grok",
+      "check": "sora_models",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "output_json": "grok/20260426_091533_sora_models.json"
+    },
+    {
+      "provider": "grok",
+      "check": "sora_chat_completions",
+      "status": 405,
+      "content_type": "",
+      "output_json": "grok/20260426_091533_sora_chat_completions.json"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"id":"resp_ce5a14c82ff7482688a7582b","object":"chat.completion","created":1777166915,"model":"grok-4.1-fast","choices":[{"index":0,"message":{"role":"assistant","content":"\u003cthink\u003e\nThinking about your request\n\u003c/think\u003e\nOK-GROK-TUWEN"},"finish_reason":"stop"}],"usage":{"prompt_tokens":0,"completion_tokens":0,"total_tokens":0}}

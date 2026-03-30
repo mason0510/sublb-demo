@@ -1,0 +1,71 @@
+[
+  {
+    "check": "models",
+    "key_name": "openai_candidate_ec",
+    "status": 200,
+    "models": [
+      "gpt-5.5"
+    ],
+    "body_preview": "{\"data\":[{\"id\":\"gpt-5.5\",\"type\":\"model\",\"display_name\":\"gpt-5.5\",\"created_at\":\"2024-01-01T00:00:00Z\"}],\"object\":\"list\"}"
+  },
+  {
+    "check": "gpt-image-2_images_generations",
+    "key_name": "openai_candidate_ec",
+    "status": 200,
+    "body_preview": "{\"created\":1777139887,\"data\":[{\"b64_json\":\"iVBORw0KGgoAAAANSUhEUgAABOYAAATmCAIAAAAKnjl9AABnL2NhQlgAAGcvanVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAZwlqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOjgyNTljMDYxLTQ1ODgtNGRkYi1iNWU0LTA4YWQ4Y2I4NTBjOQAAABblanVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAJ0Wp1bWIAAAA7anVtZEDLDDK7ikidpwsq1vR/Q2kTYzJwYS5pY29uAAAAABhjMnNo5+On/l4OikD8taxS3CA/QgAAABdiZmRiAGltYWdlL3N2Zyt4bWwAAAAJd2JpZGI8c3ZnIHdpZHRoPSI3MTYiIGhlaWdodD0iNzE2IiB2aWV3Qm94PSIwIDAgNzE2IDcxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTUwOC43NDkgMzE3LjM5OUM1MTYuNzc3IDI4Ny4zMTQgNTA4Ljk5MSAyNTMuODg0IDQ4NS4zODkgMjMwLjI4MkM0NjEuNzg4IDIwNi42ODEgNDI4LjM2IDE5OC44OTUgMzk4LjI3MyAyMDYuOTIzQzM3Ni4yMzEgMTg0LjkyOCAzNDMuMzkgMTc0Ljk1NiAzMTEuMTQ4IDE4My41OTZDMjc4LjkwNiAxOTIuMjM0IDI1NS40NSAyMTcuMjkyIDI0Ny4zNiAyNDcuMzYxQzIxNy4yOTEgMjU1LjQ1MSAxOTIuMjMzIDI3OC45MSAxODMuNTk1IDMxMS4xNDlDMTc0Ljk1NyAzNDMuMzkxIDE4NC45MjcgMzc2LjIzMiAyMDYuOTI0IDM5OC4yNzRDMTk4L"
+  },
+  {
+    "check": "models",
+    "key_name": "grok_candidate_62",
+    "status": 200,
+    "models": [
+      "grok-4.1-fast",
+      "grok-imagine-1.0",
+      "grok-imagine-1.0-fast"
+    ],
+    "body_preview": "{\"data\":[{\"id\":\"grok-4.1-fast\",\"object\":\"model\",\"created\":0,\"owned_by\":\"grok\",\"type\":\"model\",\"display_name\":\"grok-4.1-fast\"},{\"id\":\"grok-imagine-1.0\",\"object\":\"model\",\"created\":0,\"owned_by\":\"grok\",\"type\":\"model\",\"display_name\":\"grok-imagine-1.0\"},{\"id\":\"grok-imagine-1.0-fast\",\"object\":\"model\",\"created\":0,\"owned_by\":\"grok\",\"type\":\"model\",\"display_name\":\"grok-imagine-1.0-fast\"}],\"object\":\"list\"}"
+  },
+  {
+    "check": "gpt-image-2_images_generations",
+    "key_name": "grok_candidate_62",
+    "status": 503,
+    "body_preview": "{\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}"
+  },
+  {
+    "check": "models",
+    "key_name": "grok_candidate_89",
+    "status": 200,
+    "models": [
+      "grok-4.1-fast",
+      "grok-imagine-1.0",
+      "grok-imagine-1.0-fast"
+    ],
+    "body_preview": "{\"data\":[{\"id\":\"grok-4.1-fast\",\"object\":\"model\",\"created\":0,\"owned_by\":\"grok\",\"type\":\"model\",\"display_name\":\"grok-4.1-fast\"},{\"id\":\"grok-imagine-1.0\",\"object\":\"model\",\"created\":0,\"owned_by\":\"grok\",\"type\":\"model\",\"display_name\":\"grok-imagine-1.0\"},{\"id\":\"grok-imagine-1.0-fast\",\"object\":\"model\",\"created\":0,\"owned_by\":\"grok\",\"type\":\"model\",\"display_name\":\"grok-imagine-1.0-fast\"}],\"object\":\"list\"}"
+  },
+  {
+    "check": "gpt-image-2_images_generations",
+    "key_name": "grok_candidate_89",
+    "status": 503,
+    "body_preview": "{\"error\":{\"message\":\"Service temporarily unavailable\",\"type\":\"api_error\"}}"
+  },
+  {
+    "check": "openai_save",
+    "saved_path": null,
+    "status": 200,
+    "body_preview": "{\"background\":false,\"completed_at\":1777139903,\"created_at\":1777139896,\"error\":null,\"frequency_penalty\":0.0,\"id\":\"resp_091f2b7a3e8dc0a60169ed00b8c3508191ac079a55bfb8fe45\",\"incomplete_details\":null,\"instructions\":\"You are a helpful coding assistant.\",\"max_output_tokens\":null,\"max_tool_calls\":null,\"metadata\":{},\"model\":\"gpt-5.5\",\"moderation\":null,\"object\":\"response\",\"output\":[{\"content\":[{\"text\":\"当然可以。这里给你一个可直接使用的 SVG，满足“白底、红色、极简、扁平苹果图标”：\\n\\n```svg\\n<svg width=\\\"512\\\" height=\\\"512\\\" viewBox=\\\"0 0 512 512\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\">\\n  <!-- 白色背景 -->\\n  <rect width=\\\"512\\\" height=\\\"512\\\" fill=\\\"white\\\"/>\\n\\n  <!-- 苹果主体 -->\\n  <path d=\\\"M256 170\\n           C220 120, 140 130, 125 215\\n           C110 300, 165 375, 256 390\\n           C347 375, 402 300, 387 215\\n           C372 130, 292 120, 256 170Z\\\"\\n        fill=\\\"#E53935\\\"/>\\n\\n  <!-- 苹果叶子 -->\\n  <path d=\\\"M285 125\\n           C315 95, 360 100, 375 135\\n           C338 145, 305 155, 285 125Z\\\"\\n        fill=\\\"#E53935\\\"/>\\n\\n  <!-- 苹果梗 -->\\n  <rect x=\\\"248\\\" y=\\\"105\\\" width=\\\"16\\\" height=\\\"42\\\" rx=\\\"8\\\" fill=\\\"#E53935\\\"/>\\n</svg>\\n```\\n\\n如果你愿意，我还可以继续帮你生成以下任一种版本：\\n1. 更像 iOS 图标风格  \\n2. 更圆润可爱版  \\n3. 更几何极简版  \\n4. 直接输出 PNG 提示词用"
+  },
+  {
+    "check": "grok_save_attempt",
+    "model": "grok-imagine-1.0-fast",
+    "status": 502,
+    "saved_path": null,
+    "body_preview": "{\"type\":\"https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-502/\",\"title\":\"Error 502: Bad gateway\",\"status\":502,\"detail\":\"The origin web server returned an invalid or incomplete response to Cloudflare. This typically indicates the origin is overloaded or misconfigured.\",\"instance\":\"9f1f3c6048f334db\",\"error_code\":502,\"error_name\":\"origin_bad_gateway\",\"error_category\":\"origin_error\",\"ray_id\":\"9f1f3c6048f334db\",\"timestamp\":\"2026-04-25T17:58:26Z\",\"zone\":\"sub-lb.tap365.org\",\"cloudflare_error\":true,\"retryable\":true,\"retry_after\":60,\"owner_action_required\":true,\"what_you_should_do\":\"**Wait and retry.** Back off for at least 60 seconds. If the error persists, the website operator should check their origin server health and configuration.\",\"footer\":\"This error was generated by Cloudflare on behalf of the website owner.\"}"
+  },
+  {
+    "check": "grok_save_attempt",
+    "model": "grok-imagine-1.0",
+    "status": 200,
+    "saved_path": "/Users/houzi/code/06-production-business-money-live/sublb-demo/grok/grok-imagine-1.0_20260426_015611.png",
+    "body_preview": "{\"created\":1777139912,\"data\":[{\"url\":\"https://grok74.tap365.org/v1/files/image/c33f5d8e-cb19-433c-9caa-6c3dcd8815f6.jpg\"}],\"usage\":{\"total_tokens\":0,\"input_tokens\":0,\"output_tokens\":0,\"input_tokens_details\":{\"text_tokens\":0,\"image_tokens\":0}}}"
+  }
+]

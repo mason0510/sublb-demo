@@ -1,0 +1,1 @@
+{"id":"resp_a76d3d90685a438090a5dbc1","object":"chat.completion","created":1777168640,"model":"grok-4.1-fast","choices":[{"index":0,"message":{"role":"assistant","content":"OK-GROK-TEXT"},"finish_reason":"stop"}],"usage":{"prompt_tokens":0,"completion_tokens":0,"total_tokens":0}}

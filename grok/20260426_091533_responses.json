@@ -1,0 +1,84 @@
+{
+  "status": 200,
+  "headers": {
+    "Date": "Sun, 26 Apr 2026 01:18:07 GMT",
+    "Content-Type": "application/json; charset=utf-8",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "Content-Encoding": "gzip",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "vary": "Accept-Encoding",
+    "via": "1.1 Caddy",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "x-request-id": "c85a9ece-98b6-4e1d-8b56-1d488bba4ba3",
+    "cf-cache-status": "DYNAMIC",
+    "Nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+    "Report-To": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=%2BGSDDPIsBQAeuDvZGvLwB2kOp0i01fRjyz96lta4YglYPil4%2BXhufCXLtRA79LexTZS3Coci9JdtQmpkSlEWhtdyag6WWBW5wLIYA9VNTK%2BMqgefMZ2zmPj%2F1GyYxXamSBYgnA%3D%3D\"}]}",
+    "Server": "cloudflare",
+    "CF-RAY": "9f21c058ec16d938-LAX"
+  },
+  "body": {
+    "id": "resp_66953d5b302945c8808466f0",
+    "object": "response",
+    "created_at": 1777166287,
+    "completed_at": 1777166287,
+    "status": "completed",
+    "error": null,
+    "incomplete_details": null,
+    "instructions": "You are a helpful coding assistant.",
+    "max_output_tokens": null,
+    "model": "grok-4.1-fast",
+    "output": [
+      {
+        "id": "msg_234a09ebd3d941dc8b99c4ae",
+        "type": "message",
+        "role": "assistant",
+        "status": "completed",
+        "content": [
+          {
+            "type": "output_text",
+            "text": "OK-GROK-RESPONSES",
+            "annotations": []
+          }
+        ]
+      }
+    ],
+    "parallel_tool_calls": true,
+    "previous_response_id": null,
+    "reasoning": {
+      "effort": null,
+      "summary": null
+    },
+    "store": true,
+    "temperature": 1.0,
+    "text": {
+      "format": {
+        "type": "text"
+      }
+    },
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 1.0,
+    "truncation": "disabled",
+    "usage": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 0,
+        "audio_tokens": 0,
+        "image_tokens": 0
+      },
+      "completion_tokens_details": {
+        "text_tokens": 0,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0
+      }
+    },
+    "user": null,
+    "metadata": {}
+  }
+}

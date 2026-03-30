@@ -1,0 +1,110 @@
+{
+  "run_dir": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest",
+  "base_url": "https://grok.tap365.org",
+  "auth": "grok.tap365.org/upstream/SK(脱敏)",
+  "models_http_code": "200",
+  "videos_http_code": "502",
+  "video_start_utc": "2026-04-26T02:43:54Z",
+  "video_end_utc": "2026-04-26T02:44:10Z",
+  "objects": {
+    "models_headers": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/models.headers.txt",
+    "models_body": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/models.body",
+    "videos_headers": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/videos.headers.txt",
+    "videos_body": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/videos.body",
+    "video_request": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/request_video.json"
+  },
+  "models_json_type": "dict",
+  "models_top_keys": [
+    "object",
+    "data"
+  ],
+  "models_data_count": 15,
+  "videos_json_type": "dict",
+  "videos_top_keys": [
+    "error"
+  ],
+  "videos_error": {
+    "message": "AppChatReverse: Chat failed, 429",
+    "type": "server_error",
+    "param": null,
+    "code": "upstream_error"
+  },
+  "video_attempts": [
+    {
+      "name": "videos",
+      "http_code_from_headers": "502",
+      "body_path": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/videos.body",
+      "json_top_keys": [
+        "error"
+      ],
+      "error": {
+        "message": "AppChatReverse: Chat failed, 429",
+        "type": "server_error",
+        "param": null,
+        "code": "upstream_error"
+      }
+    },
+    {
+      "name": "videos_attempt2",
+      "http_code_from_headers": "502",
+      "body_path": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/videos_attempt2.body",
+      "json_top_keys": [
+        "error"
+      ],
+      "error": {
+        "message": "AppChatReverse: Chat failed, 429",
+        "type": "server_error",
+        "param": null,
+        "code": "upstream_error"
+      }
+    },
+    {
+      "name": "videos_attempt3",
+      "http_code_from_headers": "200",
+      "body_path": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/videos_attempt3.body",
+      "json_top_keys": [
+        "id",
+        "object",
+        "created_at",
+        "completed_at",
+        "status",
+        "model",
+        "prompt",
+        "size",
+        "seconds",
+        "quality",
+        "url"
+      ],
+      "id": "video_17c98454d92a410bba375605",
+      "status": "completed",
+      "url": "https://grok.tap365.org/v1/files/video/users/e915e63c-75e6-4681-954e-15de41579c9a/generated/85b1d297-4c3f-41f9-bd03-c6bc7bd7c7ed/generated_video.mp4"
+    }
+  ],
+  "video_file_check": {
+    "url_path": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/video_url.txt",
+    "head_http_code": "405",
+    "range_http_code": "206",
+    "range_file": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/video_file_range.bin",
+    "range_file_info": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/video_file_range.bin: ISO Media, MP4 Base Media v1 [ISO 14496-12:2003]",
+    "head_headers": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/video_file_head.headers.txt",
+    "range_headers": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/video_file_range.headers.txt"
+  },
+  "sublb_video_check": {
+    "base_url": "https://sub-lb.tap365.org",
+    "auth": "sub-lb.tap365.org/grok图文/SK(脱敏)",
+    "models_http_code": "200",
+    "videos_http_code": "404",
+    "video_start_utc": "2026-04-26T02:46:02Z",
+    "video_end_utc": "2026-04-26T02:46:04Z",
+    "models_body": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/sublb_models.body",
+    "videos_body": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/sublb_videos.body",
+    "video_request": "/Users/houzi/code/06-production-business-money-live/sublb-demo/test_runs/20260426_104353_grok_upstream_video_retest/request_sublb_video.json",
+    "sublb_models_json_top_keys": [
+      "data",
+      "object"
+    ],
+    "sublb_models_data": "list_len_3",
+    "sublb_videos_parse_error": "Extra data: line 1 column 5 (char 4)",
+    "sublb_videos_body_preview": "404 page not found"
+  }
+}

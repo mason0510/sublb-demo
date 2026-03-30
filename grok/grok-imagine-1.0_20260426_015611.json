@@ -1,0 +1,17 @@
+{
+  "created": 1777139912,
+  "data": [
+    {
+      "url": "https://grok74.tap365.org/v1/files/image/c33f5d8e-cb19-433c-9caa-6c3dcd8815f6.jpg"
+    }
+  ],
+  "usage": {
+    "total_tokens": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "input_tokens_details": {
+      "text_tokens": 0,
+      "image_tokens": 0
+    }
+  }
+}

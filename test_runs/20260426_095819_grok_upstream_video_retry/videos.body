@@ -1,0 +1,1 @@
+{"error":{"message":"seconds must be between 6 and 30","type":"invalid_request_error","param":"seconds","code":"invalid_seconds"}}
