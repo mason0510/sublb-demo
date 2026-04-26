@@ -12,7 +12,20 @@
 > 如果你关心的是 **Sublb Grok / OpenAI 对外 API 与当前可对外展示口径**，请直接看：
 >
 > - [Sublb生图对外API文档.md](Sublb生图对外API文档.md)
-> - [Sublb生图公告_有效3天.md](Sublb生图公告_有效3天.md)
+
+## 如果你只关心生图
+
+这部分是当前最容易直接接入、也最适合外部展示的能力：
+
+| 入口 | 路径 | 默认分组 | 说明 |
+|---|---|---|---|
+| 生图 | `POST /v1/images/generations` | `gpt-image-2 -> pro` / `grok-imagine-1.0 -> grok图片` | 统一的 OpenAI-compatible 生图入口 |
+
+完整接入步骤、请求体、响应体和可直接测试的 curl，都在：
+
+- [Sublb生图对外API文档.md](Sublb生图对外API文档.md)
+
+当前本仓库里已经落了真实生图证据，仓库根目录下的 `openai/`、`grok/`、`test_runs/` 都能看到对应产物。
 
 ---
 
@@ -50,7 +63,6 @@ sublb-demo/
 ├── .env.example
 ├── QA常见问题.md
 ├── Sublb生图对外API文档.md
-├── Sublb生图公告_有效3天.md
 ├── 第三方客户端问题汇总.md
 ├── README.md
 └── examples/
@@ -66,8 +78,7 @@ sublb-demo/
 
 - [QA常见问题.md](QA常见问题.md) ：汇总常见报错、服务器错误码、上游 429/502/超时/TLS 问题的处理方式。
 - [第三方客户端问题汇总.md](第三方客户端问题汇总.md) ：专门汇总 OpenClaw、Codex CLI、curl、Python/OpenAI SDK 的常见兼容与排障问题。
-- [Sublb生图对外API文档.md](Sublb生图对外API文档.md) ：面向外部接入方的 Grok / OpenAI 对外 API 文档，包含文本接口、图片分组口径，以及视频公网边界。
-- [Sublb生图公告_有效3天.md](Sublb生图公告_有效3天.md) ：可直接对外展示的 3 天有效公告文案。
+- [Sublb生图对外API文档.md](Sublb生图对外API文档.md) ：面向外部接入方的生图对外 API 文档，包含分组 key、请求体、响应体和 curl 测试示例。
 
 ## 快速开始（最短路径）
 
