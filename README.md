@@ -24,7 +24,7 @@
 |---|---|---|---|---|
 | 生图 | `POST /v1/images/generations` | `pro` | `gpt-image-2` | OpenAI 生图分组；本轮已真实跑通，返回过 `b64_json` |
 | 生图 | `POST /v1/images/generations` | `grok图片` | `grok-imagine-1.0` | Grok 生图分组；本轮可用 |
-| 生图 | `POST /v1/images/generations` | `grok图文` | `grok-imagine-1.0` | 技术上也能调起同一模型；对外默认口径仍写 `grok图片` |
+| 生图 | `POST /v1/images/generations` | `grok图文` | `grok-4.1-fast` / `grok-imagine-1.0` | 图文 key；文本/对话走 `grok-4.1-fast`，生图请求仍可传 `grok-imagine-1.0` |
 
 完整接入步骤、请求体、响应体和可直接测试的 curl，都在：
 

@@ -19,14 +19,14 @@
 |---|---|---|---|
 | `pro` | `gpt-image-2` | OpenAI 生图分组 | 本轮已真实跑通，返回过 `b64_json`；前两次失败属于上游瞬时不可用，不是 key 写错 |
 | `grok图片` | `grok-imagine-1.0` | Grok 生图分组 | 本轮可用 |
-| `grok图文` | `grok-imagine-1.0` | 同一模型的另一种 key 口径 | 技术上可调用；对外默认口径仍写 `grok图片` |
+| `grok图文` | `grok-4.1-fast` / `grok-imagine-1.0` | 图文 key；文本/对话走 `grok-4.1-fast`，生图仍走 `grok-imagine-1.0` | 这把 key 不是“同一图片模型”的另一种写法 |
 
 ### 1.2 最容易搞错的点
 
 1. **分组 key** 不是模型名。
 2. `gpt-image-2` 对外应走 `pro`。
 3. `grok-imagine-1.0` 对外应走 `grok图片`。
-4. 如果你手里是 `grok图文` key，本轮也能真实调起同一个生图模型，但文档和对外说明不要把默认口径改乱。
+4. 如果你手里是 `grok图文` key，文本/对话侧应理解为 `grok-4.1-fast`；生图请求里仍然可以传 `grok-imagine-1.0`。
 5. 看到某个分组曾经成功，不代表这个分组永远稳定；**当前状态要看真实响应**。
 
 ---
@@ -227,8 +227,8 @@ curl --noproxy '*' \
   }'
 ```
 
-这条是为了说明：**`grok图文` key 本轮也能真实调起同一个生图模型**。  
-但对外默认口径仍然写 `grok图片`。
+这条是为了说明：**`grok图文` key 在生图请求里也能真实调起 `grok-imagine-1.0`**。
+但这把 key 的文本/对话模型口径是 `grok-4.1-fast`，不要和 `grok图片` 混成同一个模型。
 
 ---
 
@@ -238,14 +238,15 @@ curl --noproxy '*' \
 |---|---|
 | `pro` / `gpt-image-2` | 本轮已真实跑通，返回过 `b64_json`；前两次失败是上游瞬时不可用 |
 | `grok图片` / `grok-imagine-1.0` | 可用，返回真实图片 URL |
-| `grok图文` / `grok-imagine-1.0` | 可真实调起，本轮实测可用 |
+| `grok图文` / `grok-4.1-fast` | 文本/对话侧可真实调起；生图请求侧也可传 `grok-imagine-1.0` |
 
 ### 6.1 这份文档的最终口径
 
 可以对外写：
 
 - `grok-imagine-1.0` 对外默认分组口径是 `grok图片`
-- `grok图文` key 也能调通 `grok-imagine-1.0`
+- `grok图文` key 的文本/对话口径是 `grok-4.1-fast`
+- `grok图文` key 在生图请求里也可调通 `grok-imagine-1.0`
 - `gpt-image-2` 对外对应 `pro`，本轮已跑通并拿到真实 `b64_json`
 
 ---
