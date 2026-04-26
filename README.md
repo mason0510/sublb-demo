@@ -24,11 +24,22 @@
 |---|---|---|---|---|
 | 生图 | `POST /v1/images/generations` | `openai-image-2026042` | `gpt-image-2` | OpenAI 生图分组；本轮已真实跑通，返回过 `b64_json` |
 | 生图 | `POST /v1/images/generations` | `grok图片` | `grok-imagine-1.0` | Grok 生图分组；本轮可用 |
-| 生图 | `POST /v1/images/generations` | `grok图文` | `grok-4.1-fast` / `grok-imagine-1.0` | 图文 key；文本/对话走 `grok-4.1-fast`，生图请求仍可传 `grok-imagine-1.0` |
 
 完整接入步骤、请求体、响应体和可直接测试的 curl，都在：
 
 - [Sublb生图对外API文档.md](Sublb生图对外API文档.md)
+
+本地调试时，先复制一份环境变量模板：
+
+```bash
+cp .env.example .env
+```
+
+然后按需填写这几个变量：
+
+- `SUBLB_BASE_URL`
+- `SUBLB_OPENAI_IMAGE_GROUP` / `SUBLB_OPENAI_IMAGE_API_KEY`
+- `SUBLB_GROK_IMAGE_GROUP` / `SUBLB_GROK_IMAGE_API_KEY`
 
 真实生图证据在这些目录里：
 

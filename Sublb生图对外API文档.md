@@ -19,14 +19,12 @@
 |---|---|---|---|
 | `openai-image-2026042` | `gpt-image-2` | OpenAI 生图分组 | 本轮已真实跑通，返回过 `b64_json`；前两次失败属于上游瞬时不可用，不是 key 写错 |
 | `grok图片` | `grok-imagine-1.0` | Grok 生图分组 | 本轮可用 |
-| `grok图文` | `grok-4.1-fast` / `grok-imagine-1.0` | 图文 key；文本/对话走 `grok-4.1-fast`，生图仍走 `grok-imagine-1.0` | 这把 key 不是“同一图片模型”的另一种写法 |
 
 ### 1.2 最容易搞错的点
 
 1. **分组 key** 不是模型名。
 2. `gpt-image-2` 对外应走 `openai-image-2026042`。
 3. `grok-imagine-1.0` 对外应走 `grok图片`。
-4. 如果你手里是 `grok图文` key，文本/对话侧应理解为 `grok-4.1-fast`；生图请求里仍然可以传 `grok-imagine-1.0`。
 5. 看到某个分组曾经成功，不代表这个分组永远稳定；**当前状态要看真实响应**。
 
 ---
@@ -38,6 +36,18 @@
 ```text
 https://sub-lb.tap365.org
 ```
+
+建议把这次用到的分组名和 key 放进本地 `.env`，对外只保留 `.env.example`：
+
+```bash
+cp .env.example .env
+```
+
+对应变量：
+
+- `SUBLB_BASE_URL`
+- `SUBLB_OPENAI_IMAGE_GROUP` / `SUBLB_OPENAI_IMAGE_API_KEY`
+- `SUBLB_GROK_IMAGE_GROUP` / `SUBLB_GROK_IMAGE_API_KEY`
 
 ### 2.2 入口路径
 
@@ -63,7 +73,6 @@ Accept: application/json
 2. 决定 `model`：
    - `openai-image-2026042` → `gpt-image-2`
    - `grok图片` → `grok-imagine-1.0`
-   - `grok图文` → `grok-imagine-1.0`
 3. 调 `POST /v1/images/generations`
 4. 从响应里取图片地址：
    - 如果返回 `data[0].url`，就下载这个 URL
@@ -211,25 +220,6 @@ curl --noproxy '*' \
   }'
 ```
 
-### 5.3 如果你手里拿到的是 `grok图文` key
-
-```bash
-curl --noproxy '*' \
-  https://sub-lb.tap365.org/v1/images/generations \
-  -H "Authorization: Bearer <YOUR_API_KEY>" \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json" \
-  -d '{
-    "model": "grok-imagine-1.0",
-    "prompt": "生成一张极简风格、白底、金属质感的字母 G 图标。",
-    "size": "1024x1024",
-    "n": 1
-  }'
-```
-
-这条是为了说明：**`grok图文` key 在生图请求里也能真实调起 `grok-imagine-1.0`**。
-但这把 key 的文本/对话模型口径是 `grok-4.1-fast`，不要和 `grok图片` 混成同一个模型。
-
 ---
 
 ## 6. 本轮实测结论
@@ -238,15 +228,12 @@ curl --noproxy '*' \
 |---|---|
 | `openai-image-2026042` / `gpt-image-2` | 本轮已真实跑通，返回过 `b64_json`；前两次失败是上游瞬时不可用 |
 | `grok图片` / `grok-imagine-1.0` | 可用，返回真实图片 URL |
-| `grok图文` / `grok-4.1-fast` | 文本/对话侧可真实调起；生图请求侧也可传 `grok-imagine-1.0` |
 
 ### 6.1 这份文档的最终口径
 
 可以对外写：
 
 - `grok-imagine-1.0` 对外默认分组口径是 `grok图片`
-- `grok图文` key 的文本/对话口径是 `grok-4.1-fast`
-- `grok图文` key 在生图请求里也可调通 `grok-imagine-1.0`
 - `gpt-image-2` 对外对应 `openai-image-2026042`，本轮已跑通并拿到真实 `b64_json`
 
 ---
