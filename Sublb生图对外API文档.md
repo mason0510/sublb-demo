@@ -17,7 +17,7 @@
 
 | 分组 key | 对应模型 | 对外默认口径 | 当前状态 |
 |---|---|---|---|
-| `openai-image-2026042` | `gpt-image-2` | OpenAI 生图分组 | 本轮已真实跑通，返回过 `b64_json`；前两次失败属于上游瞬时不可用，不是 key 写错 |
+| `openai-image-2026042` | `gpt-image-2` | OpenAI 生图 / 编辑分组 | 本轮已真实跑通生图，返回过 `b64_json`；同一模型的编辑接口也走这把 key |
 | `grok图片` | `grok-imagine-1.0` | Grok 生图分组 | 本轮可用 |
 
 ### 1.2 最容易搞错的点
@@ -25,6 +25,7 @@
 1. **分组 key** 不是模型名。
 2. `gpt-image-2` 对外应走 `openai-image-2026042`。
 3. `grok-imagine-1.0` 对外应走 `grok图片`。
+4. `gpt-image-2` 不只是生图：它同样支持 `POST /v1/images/edits` 的图生图 / 遮罩编辑。
 5. 看到某个分组曾经成功，不代表这个分组永远稳定；**当前状态要看真实响应**。
 
 ---
@@ -115,6 +116,43 @@ Accept: application/json
 }
 ```
 
+### 3.4 `gpt-image-2` 图生图 / 遮罩编辑请求
+
+`gpt-image-2` 除了 `POST /v1/images/generations`，还支持 `POST /v1/images/edits`。
+
+这条接口的关键点是：
+
+1. **不是 JSON body**，而是 `multipart/form-data`
+2. 必填字段至少包括：
+   - `image`
+   - `prompt`
+   - `model=gpt-image-2`
+3. 如果要做遮罩编辑，再带上 `mask`
+4. 对照仓库的前端调用里，连续编辑还会额外带这些引用字段：
+   - `original_file_id`
+   - `original_gen_id`
+   - `source_account_id`
+   - `conversation_id`
+   - `parent_message_id`
+
+对外最短请求示例：
+
+```bash
+curl --noproxy '*' \
+  https://sub-lb.tap365.org/v1/images/edits \
+  -H "Authorization: Bearer <YOUR_API_KEY>" \
+  -H "Accept: application/json" \
+  -F "model=gpt-image-2" \
+  -F "prompt=把这张图改成更亮一点的蓝色风格" \
+  -F "image=@./source.png" \
+  -F "mask=@./mask.png" \
+  -F "size=1024x1024" \
+  -F "quality=high" \
+  -F "response_format=b64_json"
+```
+
+如果没有 `mask`，就直接去掉这一项。
+
 ---
 
 ## 4. 响应是什么
@@ -158,6 +196,8 @@ Accept: application/json
 
 - `data[0].url`：图片下载地址
 - 或者 `data[0].b64_json`：base64 图片内容
+
+对 `POST /v1/images/edits` 来说，响应结构和生成接口一样，重点还是看这两个字段。
 
 ### 4.2 失败响应
 
@@ -220,6 +260,28 @@ curl --noproxy '*' \
   }'
 ```
 
+### 5.3 再测 OpenAI 图生图 / 遮罩编辑 `openai-image-2026042`
+
+```bash
+curl --noproxy '*' \
+  https://sub-lb.tap365.org/v1/images/edits \
+  -H "Authorization: Bearer <YOUR_API_KEY>" \
+  -H "Accept: application/json" \
+  -F "model=gpt-image-2" \
+  -F "prompt=把这张图改成更亮一点的蓝色风格" \
+  -F "image=@./source.png" \
+  -F "mask=@./mask.png" \
+  -F "size=1024x1024" \
+  -F "quality=high" \
+  -F "response_format=b64_json"
+```
+
+这条和 `POST /v1/images/generations` 的区别很直接：
+
+- 生成：只给 `prompt`
+- 编辑：还要给源图 `image`
+- 做局部修改：再加 `mask`
+
 ---
 
 ## 6. 本轮实测结论
@@ -227,6 +289,7 @@ curl --noproxy '*' \
 | 分组 key | 结果 |
 |---|---|
 | `openai-image-2026042` / `gpt-image-2` | 本轮已真实跑通，返回过 `b64_json`；前两次失败是上游瞬时不可用 |
+| `openai-image-2026042` / `gpt-image-2` / `POST /v1/images/edits` | 走同一分组 key；编辑接口形态已从对照仓库的真实调用里补齐 |
 | `grok图片` / `grok-imagine-1.0` | 可用，返回真实图片 URL |
 
 ### 6.1 这份文档的最终口径
@@ -234,6 +297,7 @@ curl --noproxy '*' \
 可以对外写：
 
 - `grok-imagine-1.0` 对外默认分组口径是 `grok图片`
+- `gpt-image-2` 对外不仅能生图，也能走 `POST /v1/images/edits` 做图生图 / 遮罩编辑，仍然使用 `openai-image-2026042`
 - `gpt-image-2` 对外对应 `openai-image-2026042`，本轮已跑通并拿到真实 `b64_json`
 
 ---

@@ -16,13 +16,14 @@
 >
 > - [Sublb生图对外API文档.md](Sublb生图对外API文档.md)
 
-## 如果你只关心生图
+## 如果你只关心图片接口
 
-生图的统一入口只有一个：
+图片接口的统一入口如下：
 
 | 入口 | 路径 | 分组 key | 模型 | 说明 |
 |---|---|---|---|---|
 | 生图 | `POST /v1/images/generations` | `openai-image-2026042` | `gpt-image-2` | OpenAI 生图分组；本轮已真实跑通，返回过 `b64_json` |
+| 编辑 | `POST /v1/images/edits` | `openai-image-2026042` | `gpt-image-2` | OpenAI 图生图 / 遮罩编辑分组；和生图共用同一分组 key |
 | 生图 | `POST /v1/images/generations` | `grok图片` | `grok-imagine-1.0` | Grok 生图分组；本轮可用 |
 
 完整接入步骤、请求体、响应体和可直接测试的 curl，都在：
@@ -40,6 +41,12 @@ cp .env.example .env
 - `SUBLB_BASE_URL`
 - `SUBLB_OPENAI_IMAGE_GROUP` / `SUBLB_OPENAI_IMAGE_API_KEY`
 - `SUBLB_GROK_IMAGE_GROUP` / `SUBLB_GROK_IMAGE_API_KEY`
+
+如果你还要测 OpenAI 的图生图 / 遮罩编辑，就继续用同一个：
+
+- `SUBLB_OPENAI_IMAGE_GROUP` / `SUBLB_OPENAI_IMAGE_API_KEY`
+
+因为 `gpt-image-2` 的编辑请求也走 `POST /v1/images/edits`，不是单独换一把 key。
 
 真实生图证据在这些目录里：
 
