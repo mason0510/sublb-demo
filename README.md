@@ -1,31 +1,44 @@
 # sublb-demo
 
-一个公开的最小 Demo：演示 **OpenAI-compatible 网关即使上游内部返回 SSE，客户端在非流式调用下也能直接拿到标准 JSON**。
+一个公开的最小 Demo，主要演示两件事：
 
-这个仓库**不包含任何密钥**，只演示如何通过 API 形式调用网关。
+1. **OpenAI-compatible 网关即使上游内部返回 SSE，客户端在非流式调用下也能直接拿到标准 JSON**
+2. **Sublb 生图对外 API 的真实接入口径、请求方式和真实产物位置**
+
+这个仓库**不包含任何密钥**，只演示如何通过 API 形式调用网关，并保留真实运行产物。
 
 > 如果你关心的是 **OpenClaw / Codex CLI / curl / Python SDK 为什么表现不一致**，请直接看：
 >
 > - [第三方客户端问题汇总.md](第三方客户端问题汇总.md)
 > - [QA常见问题.md](QA常见问题.md)
 >
-> 如果你关心的是 **Sublb Grok / OpenAI 对外 API 与当前可对外展示口径**，请直接看：
+> 如果你关心的是 **Sublb Grok / OpenAI 生图对外 API 与当前可对外展示口径**，请直接看：
 >
 > - [Sublb生图对外API文档.md](Sublb生图对外API文档.md)
 
 ## 如果你只关心生图
 
-这部分是当前最容易直接接入、也最适合外部展示的能力：
+生图的统一入口只有一个：
 
-| 入口 | 路径 | 默认分组 | 说明 |
-|---|---|---|---|
-| 生图 | `POST /v1/images/generations` | `gpt-image-2 -> pro` / `grok-imagine-1.0 -> grok图片` | 统一的 OpenAI-compatible 生图入口 |
+| 入口 | 路径 | 分组 key | 模型 | 说明 |
+|---|---|---|---|---|
+| 生图 | `POST /v1/images/generations` | `pro` | `gpt-image-2` | OpenAI 生图分组；本轮已真实跑通，返回过 `b64_json` |
+| 生图 | `POST /v1/images/generations` | `grok图片` | `grok-imagine-1.0` | Grok 生图分组；本轮可用 |
+| 生图 | `POST /v1/images/generations` | `grok图文` | `grok-imagine-1.0` | 技术上也能调起同一模型；对外默认口径仍写 `grok图片` |
 
 完整接入步骤、请求体、响应体和可直接测试的 curl，都在：
 
 - [Sublb生图对外API文档.md](Sublb生图对外API文档.md)
 
-当前本仓库里已经落了真实生图证据，仓库根目录下的 `openai/`、`grok/`、`test_runs/` 都能看到对应产物。
+真实生图证据在这些目录里：
+
+- `openai/`：OpenAI 生图相关真实返回
+- `grok/`：Grok 生图相关真实返回
+- `test_runs/`：按时间归档的真实验收产物
+
+如果你只想看一次就懂，优先打开：
+
+- `test_runs/20260426_120319_gpt_img_openai_image/`
 
 ---
 
