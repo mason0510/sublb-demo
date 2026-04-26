@@ -17,14 +17,14 @@
 
 | 分组 key | 对应模型 | 对外默认口径 | 当前状态 |
 |---|---|---|---|
-| `pro` | `gpt-image-2` | OpenAI 生图分组 | 本轮已真实跑通，返回过 `b64_json`；前两次失败属于上游瞬时不可用，不是 key 写错 |
+| `openai-image-2026042` | `gpt-image-2` | OpenAI 生图分组 | 本轮已真实跑通，返回过 `b64_json`；前两次失败属于上游瞬时不可用，不是 key 写错 |
 | `grok图片` | `grok-imagine-1.0` | Grok 生图分组 | 本轮可用 |
 | `grok图文` | `grok-4.1-fast` / `grok-imagine-1.0` | 图文 key；文本/对话走 `grok-4.1-fast`，生图仍走 `grok-imagine-1.0` | 这把 key 不是“同一图片模型”的另一种写法 |
 
 ### 1.2 最容易搞错的点
 
 1. **分组 key** 不是模型名。
-2. `gpt-image-2` 对外应走 `pro`。
+2. `gpt-image-2` 对外应走 `openai-image-2026042`。
 3. `grok-imagine-1.0` 对外应走 `grok图片`。
 4. 如果你手里是 `grok图文` key，文本/对话侧应理解为 `grok-4.1-fast`；生图请求里仍然可以传 `grok-imagine-1.0`。
 5. 看到某个分组曾经成功，不代表这个分组永远稳定；**当前状态要看真实响应**。
@@ -61,7 +61,7 @@ Accept: application/json
 
 1. 先确认你手里的 key 属于哪个分组。
 2. 决定 `model`：
-   - `pro` → `gpt-image-2`
+   - `openai-image-2026042` → `gpt-image-2`
    - `grok图片` → `grok-imagine-1.0`
    - `grok图文` → `grok-imagine-1.0`
 3. 调 `POST /v1/images/generations`
@@ -179,7 +179,7 @@ Accept: application/json
 
 下面的 curl 都可以直接改 key 后执行。
 
-### 5.1 先测 OpenAI 生图分组 `pro`
+### 5.1 先测 OpenAI 生图分组 `openai-image-2026042`
 
 ```bash
 curl --noproxy '*' \
@@ -236,7 +236,7 @@ curl --noproxy '*' \
 
 | 分组 key | 结果 |
 |---|---|
-| `pro` / `gpt-image-2` | 本轮已真实跑通，返回过 `b64_json`；前两次失败是上游瞬时不可用 |
+| `openai-image-2026042` / `gpt-image-2` | 本轮已真实跑通，返回过 `b64_json`；前两次失败是上游瞬时不可用 |
 | `grok图片` / `grok-imagine-1.0` | 可用，返回真实图片 URL |
 | `grok图文` / `grok-4.1-fast` | 文本/对话侧可真实调起；生图请求侧也可传 `grok-imagine-1.0` |
 
@@ -247,7 +247,7 @@ curl --noproxy '*' \
 - `grok-imagine-1.0` 对外默认分组口径是 `grok图片`
 - `grok图文` key 的文本/对话口径是 `grok-4.1-fast`
 - `grok图文` key 在生图请求里也可调通 `grok-imagine-1.0`
-- `gpt-image-2` 对外对应 `pro`，本轮已跑通并拿到真实 `b64_json`
+- `gpt-image-2` 对外对应 `openai-image-2026042`，本轮已跑通并拿到真实 `b64_json`
 
 ---
 
