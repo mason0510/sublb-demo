@@ -20,7 +20,7 @@ https://sub-lb.tap365.org
 
 1. `gpt-image-2` 的对外默认分组口径仍是 `pro`，但本轮公网 `POST /v1/images/generations` 连续 3 次返回 `502 origin_bad_gateway`，**当前不可对外承诺可用**
 2. `grok-imagine-1.0` 的对外默认分组口径仍是 `grok图片`，且本轮公网 `POST /v1/images/generations` 已实测 `200` 可生图
-3. 追加实测事实：用户自备的 `grok图文` key 也已成功调用 `grok-imagine-1.0`
+3. 追加实测事实：用户自备的 `grok图文` key 的文本/对话口径是 `grok-4.1-fast`，而在生图请求里也可传 `grok-imagine-1.0`
 4. 视频源码路由存在 `GET /sora/v1/models`、`POST /sora/v1/chat/completions`，但当前公网分别返回 HTML 壳与 `405`，**当前不可对外承诺可用**
 
 使用说明：
