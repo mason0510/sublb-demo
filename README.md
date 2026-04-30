@@ -65,18 +65,7 @@ Content-Type: application/json
 | Claude | `claude-sonnet-4-5-20250929` | `POST /v1/messages` | 200，返回 `SUBLB_CLAUDE_OK`；Claude 原生 Messages |
 | Claude | `claude-opus-4-6` | `POST /v1/messages` | 200，返回 `SUBLB_CLAUDE_OK`；Claude 原生 Messages |
 
-暂未承诺可用：
-
-| Provider | 模型 | 当前结果 | 说明 |
-|---|---|---|---|
-| Grok | `grok-imagine-1.0-fast` | 502 | `/v1/models` 可见，但生图业务未通过 |
-| Gemini | `gemini-3.1-pro-preview` | 502 | `POST /v1/chat/completions` 当前未通过 |
-| Gemini | `gemini-3-pro-image` / `gemini-3-pro-image-preview` / `gemini-3.1-flash-image-preview` / `gemini-3.1-flash-image` | 503 | `POST /v1/images/generations` 当前未通过 |
-| Gemini | `gemini-3-pro-preview` / `gemini-3.1-flash-lite-preview` | 503 | 当前未写入可用清单 |
-| Claude | `claude-sonnet-4-5-20250929` / `claude-opus-4-6` | Chat 502 / 503 | 原生 `/v1/messages` 可用；OpenAI-compatible `/v1/chat/completions` 暂未通过 |
-| Claude | `claude-opus-4-7` | timeout | `/v1/messages` 当前超时，未写入可用 |
-
-> 注意：`/v1/models` 能看到模型，不等于该模型业务接口一定可用。README 和 API 文档只把真实业务接口跑通的模型写入“可用”。
+> 注意：未列出的模型不在 README 的对外承诺范围内。以 API 文档和实际分组权限为准。
 
 ---
 

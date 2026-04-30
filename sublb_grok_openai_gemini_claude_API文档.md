@@ -10,33 +10,11 @@
 
 ---
 
-## 当前能力摘要
+## 接入说明
 
-```text
-SubLB OpenAI-compatible Base URL
-└─ https://sub-lb.tap365.org
+本文档面向接入方，说明 SubLB OpenAI-compatible API 的 Base URL、认证方式、常用接口、请求示例与响应格式。
 
-当前已验证可用
-├─ Grok 文本
-│  ├─ /v1/chat/completions -> grok-4.1-fast -> 200
-│  └─ /v1/responses        -> grok-4.1-fast -> 200, status=completed
-├─ Grok 图片
-│  └─ /v1/images/generations -> grok-imagine-1.0 -> 200, 返回 data[0].url
-├─ OpenAI 图片
-│  └─ /v1/images/generations -> gpt-image-2 -> 200, 返回 data[0].b64_json
-├─ Gemini 文本
-│  └─ /v1/chat/completions -> gemini-3-flash-preview -> 200, 返回 SUBLB_GEMINI_TEXT_OK
-└─ Claude 原生 Messages
-   ├─ /v1/messages -> claude-sonnet-4-5-20250929 -> 200, 返回 SUBLB_CLAUDE_OK
-   └─ /v1/messages -> claude-opus-4-6 -> 200, 返回 SUBLB_CLAUDE_OK
-
-暂不承诺可用的模型
-├─ grok-imagine-1.0-fast -> /v1/models 可见，但 /v1/images/generations 当前返回 502
-├─ Gemini 文本 -> gemini-3.1-pro-preview 当前 /v1/chat/completions 返回 502 Cloudflare origin_bad_gateway
-├─ Gemini 图片 -> gemini-3-pro-image / gemini-3-pro-image-preview / gemini-3.1-flash-image-preview / gemini-3.1-flash-image 当前 /v1/images/generations 均返回 503，未跑通生图
-├─ Claude OpenAI-compatible Chat -> /v1/chat/completions 当前返回 502 / 503，不写 OpenAI-compatible 可用
-└─ Claude 原生 Messages -> claude-opus-4-7 当前 45s 客户端超时，未写入可用
-```
+当前对外推荐优先使用文档中明确列出的模型；未列出的模型不在本文档承诺范围内。
 
 ---
 
@@ -318,20 +296,6 @@ OpenAI 当前常见返回 base64：
 | Grok | `grok-imagine-1.0` | `/v1/images/generations` | 200 | 4.667s | `data[0].url` |
 | OpenAI | `gpt-image-2` | `/v1/images/generations` | 200 | 20.694s | `data[0].b64_json` |
 
-暂未通过：
-
-| Provider | 模型 | 路径 | HTTP | 结论 |
-|---|---|---|---:|---|
-| Grok | `grok-imagine-1.0-fast` | `/v1/images/generations` | 502 | 模型可枚举，但当前业务调用未通过 |
-| Gemini | `gemini-3.1-pro-preview` | `/v1/chat/completions` | 502 | Cloudflare `origin_bad_gateway`，`retry_after=60` |
-| Gemini | `gemini-3-pro-image` | `/v1/images/generations` | 503 | 返回 `Service temporarily unavailable` |
-| Gemini | `gemini-3-pro-image-preview` | `/v1/images/generations` | 503 | 返回 `Service temporarily unavailable` |
-| Gemini | `gemini-3.1-flash-image-preview` | `/v1/images/generations` | 503 | 返回 `Service temporarily unavailable` |
-| Gemini | `gemini-3.1-flash-image` | `/v1/images/generations` | 503 | 返回 `Service temporarily unavailable` |
-| Claude | `claude-sonnet-4-5-20250929` | `/v1/chat/completions` | 503 | OpenAI-compatible Chat 当前未通过 |
-| Claude | `claude-opus-4-6` | `/v1/chat/completions` | 503 | OpenAI-compatible Chat 当前未通过 |
-| Claude | `claude-opus-4-7` | `/v1/messages` | 0 | 45s 客户端超时，未完成业务成功响应 |
-
 ---
 
 ## 8. `/v1/images/edits`
@@ -363,13 +327,9 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
 |---|---|---|---|---|
 | Grok | Grok 文本 / 图文分组 | `grok-4.1-fast` | 可用 | `/v1/chat/completions`、`/v1/responses` 已测 200 |
 | Grok | Grok 图片分组 | `grok-imagine-1.0` | 可用 | `/v1/images/generations` 已测 200 |
-| Grok | Grok 图片分组 | `grok-imagine-1.0-fast` | 暂不承诺 | `/v1/models` 可见，生图当前 502 |
 | OpenAI | OpenAI 图片分组 | `gpt-image-2` | 可用 | `/v1/images/generations` 已测 200 |
 | Gemini | Gemini 文本分组 | `gemini-3-flash-preview` | 可用 | `/v1/chat/completions` 已测 200，返回 `SUBLB_GEMINI_TEXT_OK` |
-| Gemini | Gemini 文本分组 | `gemini-3.1-pro-preview` | OpenAI-compatible 未通过 | `/v1/chat/completions` 当前 502 Cloudflare `origin_bad_gateway` |
-| Gemini | Gemini 图片分组 | `gemini-3-pro-image`, `gemini-3-pro-image-preview`, `gemini-3.1-flash-image-preview`, `gemini-3.1-flash-image` | 生图未通过 | `/v1/images/generations` 当前均为 503 `Service temporarily unavailable` |
-| Claude | claudecode特价 / cc-Max | `claude-sonnet-4-5-20250929`, `claude-opus-4-6` | 原生 `/v1/messages` 可用；OpenAI-compatible Chat 未通过 | `/v1/messages` 已测 200；`/v1/chat/completions` 当前 502 / 503 |
-| Claude | claudecode特价 / cc-Max | `claude-opus-4-7` | 原生 `/v1/messages` 未通过 | 当前 45s 客户端超时 |
+| Claude | Claude 分组 | `claude-sonnet-4-5-20250929`, `claude-opus-4-6` | 原生 `/v1/messages` 可用 | Claude 原生 Messages，不是 OpenAI-compatible Chat |
 
 ---
 
