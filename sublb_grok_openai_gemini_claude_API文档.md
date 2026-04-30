@@ -2,7 +2,7 @@
 
 测试日期：2026-04-30
 
-文档版本：v1.7
+文档版本：v1.8
 
 ## 开篇：先把接入路径说清楚
 
@@ -88,7 +88,60 @@ export SUBLB_BASE_URL="https://sub-lb.tap365.org"
 export SUBLB_API_KEY="你的 SubLB 分组 Key"
 ```
 
-## 3. 分组 Key 怎么选
+## 3. 用户自助最快验证：一条文本、一条图片
+
+如果你已经拿到一把支持 Grok 文图的 SubLB Key，最快的验证方式不是先看长文档，而是直接跑下面两条 curl。
+
+> 注意：`/v1/models` 只能说明“这把 Key 能枚举到模型”，不代表真实业务接口一定可用。真正验收请至少跑一次文本接口和一次图片接口。
+
+### 3.1 文本快速验证：`grok-4.1-fast`
+
+```bash
+curl -sS "$SUBLB_BASE_URL/v1/chat/completions" \
+  -H "Authorization: Bearer $SUBLB_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "model": "grok-4.1-fast",
+    "messages": [
+      {"role": "user", "content": "只回复 OK"}
+    ],
+    "stream": false
+  }'
+```
+
+符合预期：
+
+- HTTP 状态码为 `200`；
+- 响应中有 `choices[0].message.content`；
+- 内容最终包含 `OK`。
+
+补充说明：部分 reasoning 模型可能在正文里同时返回 `<think>...</think>`，只要最终 assistant 内容正常返回，就说明文本业务接口已跑通。
+
+### 3.2 图片快速验证：`grok-imagine-1.0`
+
+```bash
+curl -sS "$SUBLB_BASE_URL/v1/images/generations" \
+  -H "Authorization: Bearer $SUBLB_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "model": "grok-imagine-1.0",
+    "prompt": "一只橘猫坐在赛博朋克城市的窗边，电影感，高质量",
+    "n": 1,
+    "size": "1024x1024"
+  }'
+```
+
+符合预期：
+
+- HTTP 状态码为 `200`；
+- 响应中有 `data[0].url`；
+- 用浏览器打开该 URL，或执行 `curl -L "$IMAGE_URL" -o image.png` 能下载图片。
+
+如果文本和图片都返回 `200`，这把 Key 对应分组的 Grok 文图能力基本可用；如果 `/v1/models` 正常但上述业务接口返回 `503`，通常不是 curl 写法问题，应联系维护方检查该分组是否绑定了可用上游账号。
+
+## 4. 分组 Key 怎么选
 
 | 分组方向 | 适合做什么 | 推荐模型 | 常用接口 |
 |---|---|---|---|
@@ -102,7 +155,7 @@ export SUBLB_API_KEY="你的 SubLB 分组 Key"
 
 > 一个 Key 只代表一个分组的权限。比如图片分组 Key 不一定能调用文本模型，文本分组 Key 也不一定能调用图片模型。
 
-## 4. 各平台支持模型与核心使用
+## 5. 各平台支持模型与核心使用
 
 | 平台 | 模型 | 能力 | 核心使用 |
 |---|---|---|---|
@@ -120,7 +173,7 @@ export SUBLB_API_KEY="你的 SubLB 分组 Key"
 
 图片能力按平台分两类：OpenAI / Grok 使用 OpenAI 图片接口；Gemini 使用原生 `generateContent`，不要把 Gemini 图片模型写到 `/v1/images/generations`。
 
-## 5. 模型枚举 `/v1/models`
+## 6. 模型枚举 `/v1/models`
 
 先用 `/v1/models` 看这把 Key 能枚举到哪些模型：
 
@@ -143,7 +196,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/models" \
 
 注意：`/v1/models` 只说明“能枚举”，不等于“业务接口一定可用”。上线前请再调用对应业务接口确认。
 
-## 6. 文本对话 `/v1/chat/completions`
+## 7. 文本对话 `/v1/chat/completions`
 
 适合普通聊天、智能客服、问答、第三方 OpenAI-compatible 客户端。
 
@@ -196,7 +249,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
 }
 ```
 
-## 7. Responses API `/v1/responses`
+## 8. Responses API `/v1/responses`
 
 适合已经按 OpenAI Responses API 接入的客户端或 Agent 工具链。
 
@@ -245,7 +298,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/responses" \
 }
 ```
 
-## 8. 生图 `/v1/images/generations`
+## 9. 生图 `/v1/images/generations`
 
 OpenAI 图片分组推荐 `gpt-image-2`；Grok 图片分组推荐 `grok-imagine-1.0`。
 
@@ -306,7 +359,7 @@ Grok 图片常见返回：
 
 接入方建议同时兼容 `data[0].b64_json` 和 `data[0].url`。
 
-## 9. 图片编辑 `/v1/images/edits`
+## 10. 图片编辑 `/v1/images/edits`
 
 图片编辑使用 OpenAI 风格 multipart/form-data。OpenAI 图片分组使用 `gpt-image-2`。
 
@@ -337,7 +390,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
 }
 ```
 
-## 10. Claude 原生 Messages `/v1/messages`
+## 11. Claude 原生 Messages `/v1/messages`
 
 Claude 推荐使用原生 Messages 入口，而不是把 Claude 强行当成 Chat Completions。
 
@@ -367,11 +420,11 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
 }
 ```
 
-## 11. Gemini 原生文本与图片 `/v1beta/models/{model}:generateContent`
+## 12. Gemini 原生文本与图片 `/v1beta/models/{model}:generateContent`
 
 Gemini 分组当前推荐走 Google 原生兼容接口。认证使用 `x-goog-api-key: $SUBLB_API_KEY`，不要把 Gemini 原生接口混同为 OpenAI-compatible `/v1/chat/completions` 或 `/v1/images/generations`。
 
-### 11.1 支持模型
+### 12.1 支持模型
 
 | 类型 | 模型 | 响应重点 |
 |---|---|---|
@@ -383,7 +436,7 @@ Gemini 分组当前推荐走 Google 原生兼容接口。认证使用 `x-goog-ap
 
 未列出的 Gemini 模型不在当前推荐范围内。
 
-### 11.2 Gemini 原生文本示例
+### 12.2 Gemini 原生文本示例
 
 ```bash
 curl --noproxy '*' "$SUBLB_BASE_URL/v1beta/models/gemini-3-flash-preview:generateContent" \
@@ -417,7 +470,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1beta/models/gemini-3-flash-preview:generat
 }
 ```
 
-### 11.3 Gemini 原生图片示例
+### 12.3 Gemini 原生图片示例
 
 ```bash
 curl --noproxy '*' "$SUBLB_BASE_URL/v1beta/models/gemini-3.1-flash-image:generateContent" \
@@ -455,7 +508,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1beta/models/gemini-3.1-flash-image:generat
 }
 ```
 
-## 12. 错误响应与错误码
+## 13. 错误响应与错误码
 
 SubLB 对外接口优先按 OpenAI-compatible 错误对象返回。客户端不要只按 HTTP 状态码判断，也要读取 `error.code`、`error.type` 和 `error.message`。
 
