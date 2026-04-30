@@ -5,3 +5,5 @@ Sublb生图公告_有效3天.md
 __pycache__/
 *.pyc
 .DS_Store
+
+.trash/

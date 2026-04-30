@@ -1,0 +1,2 @@
+status_time=502 1.269501
+path=/v1/images/generations
