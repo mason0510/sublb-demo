@@ -21,7 +21,7 @@ flowchart TD
 
   C --> C1[grok-4.1-fast / gpt-5.5 / gemini-3-flash-preview]
   D --> D1[grok-4.1-fast / gpt-5.5]
-  E --> E1[gpt-image-2 / grok-imagine-1.0]
+  E --> E1[gpt-image-2 / grok-imagine-1.0 / Gemini 图片模型]
   F --> F1[gpt-image-2]
   G --> G1[claude-sonnet-4-5-20250929 / claude-opus-4-6]
 ```
@@ -52,7 +52,7 @@ set +a
 
 不要把真实密钥提交到 GitHub。
 
-## 当前推荐模型
+## 当前接入口径
 
 测试日期：2026-04-30
 
@@ -68,10 +68,11 @@ set +a
 | 图片编辑 | OpenAI | `gpt-image-2` | `POST /v1/images/edits` | `data[0].b64_json` |
 | 生图 | Grok | `grok-imagine-1.0` | `POST /v1/images/generations` | `data[0].url` |
 | 文本对话 | Gemini | `gemini-3-flash-preview` | `POST /v1/chat/completions` | `choices[0].message.content` |
+| 生图 | Gemini | `gemini-3-pro-image` / `gemini-3-pro-image-preview` / `gemini-3.1-flash-image-preview` / `gemini-3.1-flash-image` | `POST /v1/images/generations` | 按分组权限和返回格式解析 |
 | Claude 原生 | Claude | `claude-sonnet-4-5-20250929` | `POST /v1/messages` | `content[].text` |
 | Claude 原生 | Claude | `claude-opus-4-6` | `POST /v1/messages` | `content[].text` |
 
-未列出的模型不在 README 的推荐范围内。实际可用能力以你的分组 Key 和业务接口调用结果为准。
+未列出的模型不在 README 的推荐范围内。实际可用能力以你的分组 Key 和业务接口调用结果为准。Gemini 图片模型需要对应图片分组支持；如果业务接口返回 503，表示当前分组上游暂不可调度。
 
 ## 最小 curl 示例
 
@@ -128,7 +129,25 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/generations" \
   }'
 ```
 
-### 5. 图片编辑
+
+### 5. Gemini 生图
+
+```bash
+curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/generations" \
+  -H "Authorization: Bearer $SUBLB_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "model": "gemini-3.1-flash-image",
+    "prompt": "White background, small green leaf icon, clean vector style",
+    "size": "1024x1024",
+    "n": 1
+  }'
+```
+
+可替换模型：`gemini-3-pro-image`、`gemini-3-pro-image-preview`、`gemini-3.1-flash-image-preview`、`gemini-3.1-flash-image`。
+
+### 6. 图片编辑
 
 ```bash
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \

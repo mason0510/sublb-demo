@@ -32,6 +32,7 @@ flowchart TD
   D --> D2[gpt-5.5]
   E --> E1[gpt-image-2]
   E --> E2[grok-imagine-1.0]
+  E --> E3[gemini-3-pro-image / gemini-3.1-flash-image]
   F --> F1[gpt-image-2]
   G --> G1[claude-sonnet-4-5-20250929]
   G --> G2[claude-opus-4-6]
@@ -43,7 +44,7 @@ flowchart TD
 |---|---|---|---|
 | 普通聊天、智能客服、文本问答 | `POST /v1/chat/completions` | `grok-4.1-fast` / `gpt-5.5` / `gemini-3-flash-preview` | `choices[0].message.content` |
 | 使用 OpenAI Responses API 的客户端 | `POST /v1/responses` | `grok-4.1-fast` / `gpt-5.5` | `status=completed`、`output[].content[].text` |
-| 生成图片 | `POST /v1/images/generations` | `gpt-image-2` / `grok-imagine-1.0` | OpenAI 常见 `b64_json`；Grok 常见 `url` |
+| 生成图片 | `POST /v1/images/generations` | `gpt-image-2` / `grok-imagine-1.0` / Gemini 图片模型 | OpenAI 常见 `b64_json`；Grok 常见 `url`；Gemini 按分组返回格式解析 |
 | 编辑图片 | `POST /v1/images/edits` | `gpt-image-2` | `data[0].b64_json` |
 | Claude 原生 Messages | `POST /v1/messages` | `claude-sonnet-4-5-20250929` / `claude-opus-4-6` | `content[].text` |
 
@@ -86,6 +87,7 @@ export SUBLB_API_KEY="你的 SubLB 分组 Key"
 | OpenAI 图片 | 生图、图片编辑 | `gpt-image-2` | `/v1/images/generations`、`/v1/images/edits` |
 | Grok 图片 | 生图 | `grok-imagine-1.0` | `/v1/images/generations` |
 | Gemini 文本 | 文本对话 | `gemini-3-flash-preview` | `/v1/chat/completions` |
+| Gemini 图片 | 生图 | `gemini-3-pro-image`、`gemini-3-pro-image-preview`、`gemini-3.1-flash-image-preview`、`gemini-3.1-flash-image` | `/v1/images/generations` |
 | Claude | Claude 原生 Messages | `claude-sonnet-4-5-20250929`、`claude-opus-4-6` | `/v1/messages` |
 
 > 一个 Key 只代表一个分组的权限。比如图片分组 Key 不一定能调用文本模型，文本分组 Key 也不一定能调用图片模型。
@@ -217,7 +219,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/responses" \
 
 ## 7. 生图 `/v1/images/generations`
 
-OpenAI 图片分组推荐 `gpt-image-2`；Grok 图片分组推荐 `grok-imagine-1.0`。
+OpenAI 图片分组推荐 `gpt-image-2`；Grok 图片分组推荐 `grok-imagine-1.0`；Gemini 图片分组使用 Gemini 图片模型。
 
 ### OpenAI 生图示例
 
@@ -275,6 +277,30 @@ Grok 图片常见返回：
 ```
 
 接入方建议同时兼容 `data[0].b64_json` 和 `data[0].url`。
+
+### Gemini 生图示例
+
+Gemini 图片模型也走同一个 OpenAI-compatible 生图入口。模型名按分组权限选择：
+
+- `gemini-3-pro-image`
+- `gemini-3-pro-image-preview`
+- `gemini-3.1-flash-image-preview`
+- `gemini-3.1-flash-image`
+
+```bash
+curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/generations" \
+  -H "Authorization: Bearer $SUBLB_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "model": "gemini-3.1-flash-image",
+    "prompt": "White background, small green leaf icon, clean vector style",
+    "size": "1024x1024",
+    "n": 1
+  }'
+```
+
+如果你拿到的是 Gemini 图片分组 Key，优先从 `gemini-3.1-flash-image` 或 `gemini-3-pro-image-preview` 开始测试；如果返回 503，通常表示当前分组上游暂不可调度，换分组或稍后重试。
 
 ## 8. 图片编辑 `/v1/images/edits`
 
@@ -395,7 +421,8 @@ SubLB 对外接口优先按 OpenAI-compatible 错误对象返回。客户端不�
 2. 再确认 Key 所在分组是否匹配目标模型。
 3. 用 `/v1/models` 看模型是否可枚举。
 4. 调用真实业务接口确认，例如 `/v1/chat/completions`、`/v1/responses`、`/v1/images/generations`。
-5. 如果业务接口返回 502 / 503，优先按上游账号、调度、额度或临时故障处理，不要直接把它判断成模型名错误。
+5. Gemini 图片模型如果枚举存在但生图返回 503，不要写成业务已可用；先按分组或上游调度处理。
+6. 如果业务接口返回 502 / 503，优先按上游账号、调度、额度或临时故障处理，不要直接把它判断成模型名错误。
 
 ## 结尾：推荐接入顺序
 
