@@ -2,21 +2,21 @@
 
 测试日期：2026-04-30
 
-文档版本：v1.1
+文档版本：v1.3
 
 > 本文档是原 `Sublb生图对外API文档.md` 的升级版：从“只写生图”升级为 OpenAI-compatible 多 provider API 接入口径。
 >
-> 可用模型只按**本轮真实业务接口调用成功**写入；`/v1/models` 能枚举到不等于业务接口已可用。
+> 可用模型只按**当前真实业务接口调用成功**写入；`/v1/models` 能枚举到不等于业务接口已可用。
 
 ---
 
-## 0. 当前结论
+## 当前能力摘要
 
 ```text
 SubLB OpenAI-compatible Base URL
 └─ https://sub-lb.tap365.org
 
-本轮已完成业务实测
+当前已验证可用
 ├─ Grok 文本
 │  ├─ /v1/chat/completions -> grok-4.1-fast -> 200
 │  └─ /v1/responses        -> grok-4.1-fast -> 200, status=completed
@@ -24,24 +24,18 @@ SubLB OpenAI-compatible Base URL
 │  └─ /v1/images/generations -> grok-imagine-1.0 -> 200, 返回 data[0].url
 ├─ OpenAI 图片
 │  └─ /v1/images/generations -> gpt-image-2 -> 200, 返回 data[0].b64_json
+├─ Gemini 文本
+│  └─ /v1/chat/completions -> gemini-3-flash-preview -> 200, 返回 SUBLB_GEMINI_TEXT_OK
 └─ Claude 原生 Messages
    ├─ /v1/messages -> claude-sonnet-4-5-20250929 -> 200, 返回 SUBLB_CLAUDE_OK
    └─ /v1/messages -> claude-opus-4-6 -> 200, 返回 SUBLB_CLAUDE_OK
 
-本轮尚未写入“可用”的模型
-├─ grok-imagine-1.0-fast -> /v1/models 可见，但 /v1/images/generations 本轮返回 502
-├─ Gemini -> 已找到 gemini 文本 key，但 OpenAI-compatible Chat 本轮返回 503；账号驱动测试返回 403 VALIDATION_REQUIRED / 503 model_not_found，不写可用
-└─ Claude OpenAI-compatible Chat -> 已找到 claudecode特价 / cc-Max key，但 /v1/chat/completions 本轮返回 502 / 503，不写 OpenAI-compatible 可用
-```
-
-本轮证据目录：
-
-```text
-test_runs/20260430_120929_sublb_grok_openai_gemini_claude_api_doc/
-test_runs/20260430_130428_sublb_gemini_claude_business_smoke/
-test_runs/20260430_130849_sublb_gemini_claude_specific_account_driver/
-test_runs/20260430_130942_sublb_claude_messages_smoke/
-test_runs/20260430_131027_sublb_gemini_account_driver_all/
+暂不承诺可用的模型
+├─ grok-imagine-1.0-fast -> /v1/models 可见，但 /v1/images/generations 当前返回 502
+├─ Gemini 文本 -> gemini-3.1-pro-preview 当前 /v1/chat/completions 返回 502 Cloudflare origin_bad_gateway
+├─ Gemini 图片 -> gemini-3-pro-image / gemini-3-pro-image-preview / gemini-3.1-flash-image-preview / gemini-3.1-flash-image 当前 /v1/images/generations 均返回 503，未跑通生图
+├─ Claude OpenAI-compatible Chat -> /v1/chat/completions 当前返回 502 / 503，不写 OpenAI-compatible 可用
+└─ Claude 原生 Messages -> claude-opus-4-7 当前 45s 客户端超时，未写入可用
 ```
 
 ---
@@ -85,15 +79,15 @@ SUBLB_MODEL="grok-4.1-fast"
 
 ## 2. OpenAI-compatible 接口总览
 
-| 能力 | 路径 | 请求格式 | 本轮状态 |
+| 能力 | 路径 | 请求格式 | 当前状态 |
 |---|---|---|---|
 | 模型枚举 | `GET /v1/models` | 无 body | 已测，200 |
 | Chat Completions | `POST /v1/chat/completions` | JSON | Grok 已测，200 |
 | Responses | `POST /v1/responses` | JSON | Grok 已测，200 |
 | Claude Messages | `POST /v1/messages` | JSON | Claude 原生已测，200；非 OpenAI-compatible |
 | 生图 | `POST /v1/images/generations` | JSON | Grok / OpenAI 已测，200 |
-| 图片编辑 | `POST /v1/images/edits` | multipart/form-data | 接入口径保留；本轮未复测 |
-| 视频 | `POST /v1/videos` 或 provider 私有路径 | 视实现而定 | 本轮未纳入可用清单 |
+| 图片编辑 | `POST /v1/images/edits` | multipart/form-data | 接入口径保留；当前未复测 |
+| 视频 | `POST /v1/videos` 或 provider 私有路径 | 视实现而定 | 当前未纳入可用清单 |
 
 ---
 
@@ -122,7 +116,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/models" \
 
 - `/v1/models` 只代表这把 key 所在分组能枚举到哪些模型。
 - 真正可对外承诺，必须再跑对应业务接口，例如 `/v1/chat/completions`、`/v1/responses`、`/v1/images/generations`。
-- 本轮 `grok-imagine-1.0-fast` 可以在 Grok 图片 key 的 `/v1/models` 中看到，但业务生图返回 502，因此不写入“已可用模型”。
+- 当前 `grok-imagine-1.0-fast` 可以在 Grok 图片 key 的 `/v1/models` 中看到，但业务生图返回 502，因此不写入“已可用模型”。
 
 ---
 
@@ -167,13 +161,13 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
 }
 ```
 
-本轮实测：
+验证结果：
 
-| 模型 | 路径 | HTTP | 耗时 | 关键结果 | 证据 |
-|---|---|---:|---:|---|---|
-| `grok-4.1-fast` | `/v1/chat/completions` | 200 | 4.263s | 返回 `SUBLB_GROK_OK` | `grok_chat_with_image_key.*` |
+| 模型 | 路径 | HTTP | 耗时 | 关键结果 |
+|---|---|---:|---:|---|
+| `grok-4.1-fast` | `/v1/chat/completions` | 200 | 4.263s | 返回 `SUBLB_GROK_OK` |
 
-> 当前 Grok 文本响应里 `usage` 字段存在，但本轮返回 token 值为 0。若要用于精确计费，需要继续推动上游稳定返回标准 usage，或由 SubLB 侧做 token 估算 / 后补。
+> 当前 Grok 文本响应里 `usage` 字段存在，但当前返回 token 值为 0。若要用于精确计费，需要继续推动上游稳定返回标准 usage，或由 SubLB 侧做 token 估算 / 后补。
 
 ---
 
@@ -210,17 +204,17 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/responses" \
 }
 ```
 
-本轮实测：
+验证结果：
 
-| 模型 | 路径 | HTTP | 耗时 | 关键结果 | 证据 |
-|---|---|---:|---:|---|---|
-| `grok-4.1-fast` | `/v1/responses` | 200 | 4.144s | `status=completed` | `grok_responses.*` |
+| 模型 | 路径 | HTTP | 耗时 | 关键结果 |
+|---|---|---:|---:|---|
+| `grok-4.1-fast` | `/v1/responses` | 200 | 4.144s | `status=completed` |
 
 ---
 
 ## 6. Claude 原生 `/v1/messages`
 
-Claude 分组本轮除 OpenAI-compatible Chat 外，额外验证了 Anthropic 原生 Messages 入口。该入口不是 OpenAI-compatible Chat，但可作为 Claude 接入方的真实业务接口。
+Claude 分组除 OpenAI-compatible Chat 外，额外验证了 Anthropic 原生 Messages 入口。该入口不是 OpenAI-compatible Chat，但可作为 Claude 接入方的真实业务接口。
 
 ```bash
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
@@ -236,14 +230,15 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
   }'
 ```
 
-本轮实测：
+验证结果：
 
-| 模型 | 路径 | HTTP | 耗时 | 关键结果 | 证据 |
-|---|---|---:|---:|---|---|
-| `claude-sonnet-4-5-20250929` | `/v1/messages` | 200 | 3.159s | 返回 `SUBLB_CLAUDE_OK` | `_v1_messages-claude-sonnet-4-5-20250929.*` |
-| `claude-opus-4-6` | `/v1/messages` | 200 | 3.242s | 返回 `SUBLB_CLAUDE_OK` | `_v1_messages-claude-opus-4-6.*` |
+| 模型 | 路径 | HTTP | 耗时 | 关键结果 |
+|---|---|---:|---:|---|
+| `claude-sonnet-4-5-20250929` | `/v1/messages` | 200 | 3.159s | 返回 `SUBLB_CLAUDE_OK` |
+| `claude-opus-4-6` | `/v1/messages` | 200 | 3.242s | 返回 `SUBLB_CLAUDE_OK` |
+| `claude-opus-4-7` | `/v1/messages` | 0 | 45.008s / 45.002s | 客户端超时；未写入可用 |
 
-同时确认：`/anthropic/v1/messages` 本轮返回 405，不作为对外推荐路径。
+同时确认：`/anthropic/v1/messages` 当前返回 405，不作为对外推荐路径。
 
 ---
 
@@ -316,22 +311,26 @@ OpenAI 当前常见返回 base64：
 - `data[0].url`
 - `data[0].b64_json`
 
-本轮实测：
+验证结果：
 
-| Provider | 模型 | 路径 | HTTP | 耗时 | 响应重点 | 证据 |
-|---|---|---|---:|---:|---|---|
-| Grok | `grok-imagine-1.0` | `/v1/images/generations` | 200 | 4.667s | `data[0].url` | `grok_image_generation.*` |
-| OpenAI | `gpt-image-2` | `/v1/images/generations` | 200 | 20.694s | `data[0].b64_json` | `openai_image_generation.*` |
+| Provider | 模型 | 路径 | HTTP | 耗时 | 响应重点 |
+|---|---|---|---:|---:|---|
+| Grok | `grok-imagine-1.0` | `/v1/images/generations` | 200 | 4.667s | `data[0].url` |
+| OpenAI | `gpt-image-2` | `/v1/images/generations` | 200 | 20.694s | `data[0].b64_json` |
 
-本轮未通过：
+暂未通过：
 
-| Provider | 模型 | 路径 | HTTP | 结论 | 证据 |
-|---|---|---|---:|---|---|
-| Grok | `grok-imagine-1.0-fast` | `/v1/images/generations` | 502 | 模型可枚举，但本轮业务调用未通过 | `grok_image_fast_generation.*` |
-| Gemini | `gemini-2.5-flash` | `/v1/chat/completions` | 503 | 找到 active key，但 OpenAI-compatible Chat 本轮未通过 | `gemini_chat_gemini-2.5-flash.*` |
-| Gemini | `gemini-3-pro-preview` | `/v1/chat/completions` | 503 | 找到 active key，但 OpenAI-compatible Chat 本轮未通过 | `gemini_chat_gemini-3-pro-preview.*` |
-| Claude | `claude-sonnet-4-5-20250929` | `/v1/chat/completions` | 503 | 找到 active key，但 OpenAI-compatible Chat 本轮未通过 | `claude_chat_claude-sonnet-4-5-20250929.*` |
-| Claude | `claude-opus-4-6` | `/v1/chat/completions` | 503 | 找到 active key，但 OpenAI-compatible Chat 本轮未通过 | `claude_chat_claude-opus-4-6.*` |
+| Provider | 模型 | 路径 | HTTP | 结论 |
+|---|---|---|---:|---|
+| Grok | `grok-imagine-1.0-fast` | `/v1/images/generations` | 502 | 模型可枚举，但当前业务调用未通过 |
+| Gemini | `gemini-3.1-pro-preview` | `/v1/chat/completions` | 502 | Cloudflare `origin_bad_gateway`，`retry_after=60` |
+| Gemini | `gemini-3-pro-image` | `/v1/images/generations` | 503 | 返回 `Service temporarily unavailable` |
+| Gemini | `gemini-3-pro-image-preview` | `/v1/images/generations` | 503 | 返回 `Service temporarily unavailable` |
+| Gemini | `gemini-3.1-flash-image-preview` | `/v1/images/generations` | 503 | 返回 `Service temporarily unavailable` |
+| Gemini | `gemini-3.1-flash-image` | `/v1/images/generations` | 503 | 返回 `Service temporarily unavailable` |
+| Claude | `claude-sonnet-4-5-20250929` | `/v1/chat/completions` | 503 | OpenAI-compatible Chat 当前未通过 |
+| Claude | `claude-opus-4-6` | `/v1/chat/completions` | 503 | OpenAI-compatible Chat 当前未通过 |
+| Claude | `claude-opus-4-7` | `/v1/messages` | 0 | 45s 客户端超时，未完成业务成功响应 |
 
 ---
 
@@ -354,30 +353,34 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
 
 如果没有遮罩，去掉 `mask` 字段。
 
-本轮没有复测图片编辑接口，因此本节只作为接入口径，不列入“本轮可用模型”。
+当前未复测图片编辑接口，因此本节只作为接入口径，不列入“当前可用模型”。
 
 ---
 
 ## 9. Provider / 分组 / 模型映射
 
-| Provider | 分组 / key 口径 | 模型 | 本轮业务状态 | 说明 |
+| Provider | 分组 / key 口径 | 模型 | 当前业务状态 | 说明 |
 |---|---|---|---|---|
 | Grok | Grok 文本 / 图文分组 | `grok-4.1-fast` | 可用 | `/v1/chat/completions`、`/v1/responses` 已测 200 |
 | Grok | Grok 图片分组 | `grok-imagine-1.0` | 可用 | `/v1/images/generations` 已测 200 |
-| Grok | Grok 图片分组 | `grok-imagine-1.0-fast` | 暂不承诺 | `/v1/models` 可见，生图本轮 502 |
+| Grok | Grok 图片分组 | `grok-imagine-1.0-fast` | 暂不承诺 | `/v1/models` 可见，生图当前 502 |
 | OpenAI | OpenAI 图片分组 | `gpt-image-2` | 可用 | `/v1/images/generations` 已测 200 |
-| Gemini | gemini文本 | `gemini-2.5-flash`, `gemini-2.5-pro`, `gemini-3-pro-preview` | OpenAI-compatible 未通过 | `/v1/models` 可见；`/v1/chat/completions` 本轮 503；账号驱动测试返回 403 `VALIDATION_REQUIRED` 或 503 `model_not_found` |
-| Claude | claudecode特价 / cc-Max | `claude-sonnet-4-5-20250929`, `claude-opus-4-6` | 原生 `/v1/messages` 可用；OpenAI-compatible Chat 未通过 | `/v1/messages` 已测 200；`/v1/chat/completions` 本轮 502 / 503 |
+| Gemini | Gemini 文本分组 | `gemini-3-flash-preview` | 可用 | `/v1/chat/completions` 已测 200，返回 `SUBLB_GEMINI_TEXT_OK` |
+| Gemini | Gemini 文本分组 | `gemini-3.1-pro-preview` | OpenAI-compatible 未通过 | `/v1/chat/completions` 当前 502 Cloudflare `origin_bad_gateway` |
+| Gemini | Gemini 图片分组 | `gemini-3-pro-image`, `gemini-3-pro-image-preview`, `gemini-3.1-flash-image-preview`, `gemini-3.1-flash-image` | 生图未通过 | `/v1/images/generations` 当前均为 503 `Service temporarily unavailable` |
+| Claude | claudecode特价 / cc-Max | `claude-sonnet-4-5-20250929`, `claude-opus-4-6` | 原生 `/v1/messages` 可用；OpenAI-compatible Chat 未通过 | `/v1/messages` 已测 200；`/v1/chat/completions` 当前 502 / 503 |
+| Claude | claudecode特价 / cc-Max | `claude-opus-4-7` | 原生 `/v1/messages` 未通过 | 当前 45s 客户端超时 |
 
 ---
 
 ## 10. 当前已实测可用模型
 
-| 模型 | Provider | 支持接口 | 本轮验收结论 |
+| 模型 | Provider | 支持接口 | 当前验收结论 |
 |---|---|---|---|
 | `grok-4.1-fast` | Grok | `/v1/chat/completions`, `/v1/responses` | 200，通过 |
 | `grok-imagine-1.0` | Grok | `/v1/images/generations` | 200，通过 |
 | `gpt-image-2` | OpenAI | `/v1/images/generations` | 200，通过 |
+| `gemini-3-flash-preview` | Gemini | `/v1/chat/completions` | 200，通过；返回 `SUBLB_GEMINI_TEXT_OK` |
 | `claude-sonnet-4-5-20250929` | Claude | `/v1/messages` | 200，通过；Claude 原生 Messages，不是 OpenAI-compatible Chat |
 | `claude-opus-4-6` | Claude | `/v1/messages` | 200，通过；Claude 原生 Messages，不是 OpenAI-compatible Chat |
 
@@ -433,34 +436,3 @@ SubLB 对外接口优先按 OpenAI-compatible 错误对象返回。客户端不�
 5. 再跑真实业务接口；`/v1/models` 通过不等于业务接口可用。
 6. 如果业务接口 502 / 503，优先看上游账号、调度、额度和网关日志，不要直接判定模型名错误。
 7. 如果响应 `usage=0`，单独标注：业务可用不等于计费 usage 完整。
-
----
-
-## 12. 本轮测试证据
-
-| 文件 | 含义 |
-|---|---|
-| `openai_image_models.json` / `.headers.txt` / `.meta.txt` | OpenAI 图片 key 的 `/v1/models` |
-| `openai_image_generation.json` / `.headers.txt` / `.meta.txt` | `gpt-image-2` 生图业务调用 |
-| `grok_image_models.json` / `.headers.txt` / `.meta.txt` | Grok 图片 key 的 `/v1/models` |
-| `grok_chat_with_image_key.json` / `.headers.txt` / `.meta.txt` | `grok-4.1-fast` Chat Completions |
-| `grok_responses.json` / `.headers.txt` / `.meta.txt` | `grok-4.1-fast` Responses |
-| `grok_image_generation.json` / `.headers.txt` / `.meta.txt` | `grok-imagine-1.0` 生图 |
-| `grok_image_fast_generation.json` / `.headers.txt` / `.meta.txt` | `grok-imagine-1.0-fast` 生图失败证据 |
-| `hurl_smoke_result.txt` | `tests/sublb_openai_compatible_smoke.hurl` 可复跑验收结果，2 个请求全部成功 |
-| `gemini_models.*` / `gemini_chat_*.json` / `.headers.txt` / `.meta.txt` | Gemini key 模型枚举 200，但 Chat Completions 503 |
-| `gemini_a*_2_5_flash.sse.txt` | Gemini 上游账号驱动测试失败；主要为 403 `VALIDATION_REQUIRED`，另有 503 `model_not_found` |
-| `claude_models.*` / `claude_chat_*.json` / `.headers.txt` / `.meta.txt` | Claude key 模型枚举 200，但 OpenAI-compatible Chat 502 / 503 |
-| `_v1_messages-claude-*.json` / `.headers.txt` / `.meta.txt` | Claude 原生 `/v1/messages` 业务实测，`claude-sonnet-4-5-20250929` 与 `claude-opus-4-6` 均 200 |
-
----
-
-## 13. 后续补充规则
-
-后续新增 Gemini / Claude / 更多 Grok / 更多 OpenAI 模型时，按同一标准补表：
-
-1. 先保存本轮真实请求证据到 `test_runs/`。
-2. 至少跑一个业务接口，不只看 `/v1/models`。
-3. 成功才写入“当前已实测可用模型”。
-4. 失败模型写入“本轮未通过”，保留状态码和错误摘要。
-5. 文档版本递增，例如 `v1.1`、`v1.2`。

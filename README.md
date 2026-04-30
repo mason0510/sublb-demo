@@ -5,9 +5,9 @@ SubLB OpenAI-compatible API 的公开最小 Demo，用于演示和验收：
 1. **标准 OpenAI 风格接口**：`/v1/models`、`/v1/chat/completions`、`/v1/responses`、`/v1/images/generations`、`/v1/images/edits`
 2. **多 provider 接入口径**：Grok / OpenAI / Gemini / Claude
 3. **非流式 JSON 聚合**：即使上游内部返回 SSE，客户端在 `stream:false` 下也应拿到标准 JSON
-4. **真实测试证据**：每次可用模型写入前，先跑真实业务接口并保存产物
+4. **真实接口验证**：只把业务接口实际跑通的模型写入可用清单
 
-这个仓库**不包含任何密钥**，只保留示例代码、对外文档和真实运行证据。
+这个仓库**不包含任何密钥**，只保留示例代码和对外文档。
 
 ---
 
@@ -49,11 +49,11 @@ Content-Type: application/json
 
 ---
 
-## 本轮已实测可用模型
+## 当前可用能力
 
 测试日期：2026-04-30
 
-文档版本：v1.0
+文档版本：v1.3
 
 | Provider | 模型 | 已测接口 | 结论 |
 |---|---|---|---|
@@ -61,20 +61,20 @@ Content-Type: application/json
 | Grok | `grok-4.1-fast` | `POST /v1/responses` | 200，`status=completed` |
 | Grok | `grok-imagine-1.0` | `POST /v1/images/generations` | 200，返回 `data[0].url` |
 | OpenAI | `gpt-image-2` | `POST /v1/images/generations` | 200，返回 `data[0].b64_json` |
+| Gemini | `gemini-3-flash-preview` | `POST /v1/chat/completions` | 200，返回 `SUBLB_GEMINI_TEXT_OK` |
+| Claude | `claude-sonnet-4-5-20250929` | `POST /v1/messages` | 200，返回 `SUBLB_CLAUDE_OK`；Claude 原生 Messages |
+| Claude | `claude-opus-4-6` | `POST /v1/messages` | 200，返回 `SUBLB_CLAUDE_OK`；Claude 原生 Messages |
 
-本轮未写入可用：
+暂未承诺可用：
 
-| Provider | 模型 | 本轮结果 | 说明 |
+| Provider | 模型 | 当前结果 | 说明 |
 |---|---|---|---|
 | Grok | `grok-imagine-1.0-fast` | 502 | `/v1/models` 可见，但生图业务未通过 |
-| Gemini | 待补 | 未测 | 本轮未拿到可测试 key |
-| Claude | 待补 | 未测 | 本轮未拿到可测试 key |
-
-证据目录：
-
-```text
-test_runs/20260430_120929_sublb_grok_openai_gemini_claude_api_doc/
-```
+| Gemini | `gemini-3.1-pro-preview` | 502 | `POST /v1/chat/completions` 当前未通过 |
+| Gemini | `gemini-3-pro-image` / `gemini-3-pro-image-preview` / `gemini-3.1-flash-image-preview` / `gemini-3.1-flash-image` | 503 | `POST /v1/images/generations` 当前未通过 |
+| Gemini | `gemini-3-pro-preview` / `gemini-3.1-flash-lite-preview` | 503 | 当前未写入可用清单 |
+| Claude | `claude-sonnet-4-5-20250929` / `claude-opus-4-6` | Chat 502 / 503 | 原生 `/v1/messages` 可用；OpenAI-compatible `/v1/chat/completions` 暂未通过 |
+| Claude | `claude-opus-4-7` | timeout | `/v1/messages` 当前超时，未写入可用 |
 
 > 注意：`/v1/models` 能看到模型，不等于该模型业务接口一定可用。README 和 API 文档只把真实业务接口跑通的模型写入“可用”。
 
@@ -220,10 +220,8 @@ sublb-demo/
 ├── examples/
 │   ├── curl/
 │   └── python/
-├── tests/
-│   └── sublb_openai_compatible_smoke.hurl
-└── test_runs/
-    └── 20260430_120929_sublb_grok_openai_gemini_claude_api_doc/
+└── tests/
+    └── sublb_openai_compatible_smoke.hurl
 ```
 
 ---
@@ -254,10 +252,10 @@ sublb-demo/
 新增模型时不要直接写入 README：
 
 1. 先用真实 key 跑业务接口。
-2. 保存请求产物到 `test_runs/`。
-3. 成功后补充 `sublb_grok_openai_gemini_claude_API文档.md` 的“当前已实测可用模型”。
-4. 再同步更新 README 的模型表。
-5. 失败模型单独写入“本轮未通过”，不要冒充可用。
+2. 成功后补充 `sublb_grok_openai_gemini_claude_API文档.md` 的“当前可用模型”。
+3. 再同步更新 README 的模型表。
+4. 失败模型单独写入“暂未承诺可用”，不要冒充可用。
+5. 对外文档不写内部 key、账号、测试产物路径或后台详情。
 
 ## License
 
