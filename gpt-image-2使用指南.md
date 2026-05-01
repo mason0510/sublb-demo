@@ -2,7 +2,7 @@
 
 测试日期：2026-05-01
 
-文档版本：v1.0
+文档版本：v1.1
 
 ## 1. 结论
 
@@ -50,8 +50,8 @@ Accept: application/json
 |---|---|---|
 | `model` | JSON 或 multipart 字段 | 固定写 `gpt-image-2` |
 | `prompt` | JSON 或 multipart 字段 | 生成或编辑指令 |
-| `image` / `image[]` | multipart 文件字段 | 待编辑图片；建议 PNG |
-| `mask` / `mask[]` | multipart 文件字段 | 局部编辑遮罩；建议 PNG；有透明区域时用于指示可编辑区域 |
+| `image` / `image[]` | multipart 文件字段 | 待编辑图片；建议 PNG。必须是文件上传，例如 `image=@./source.png`，不能直接填网络图片 URL |
+| `mask` / `mask[]` | multipart 文件字段 | 局部编辑遮罩；建议 PNG；有透明区域时用于指示可编辑区域。必须是文件上传，例如 `mask=@./mask.png` |
 | `size` | JSON 或 multipart 字段 | 常用 `1024x1024` |
 | `n` | JSON 或 multipart 字段 | 生成数量，通常 `1` |
 | `response_format` | multipart 字段 | 推荐 `b64_json` |
@@ -89,7 +89,15 @@ jq -r '.data[0].b64_json' generation.json | base64 --decode > generation.png
 
 ## 5. 图片编辑 / 修图 curl 示例
 
-`/v1/images/edits` 必须使用 `multipart/form-data`。不要把 `image` 写进 JSON body。
+`/v1/images/edits` 必须使用 `multipart/form-data`。不要把 `image` 写进 JSON body，也不要把网络图片 URL 直接填进 `image` 字段。
+
+如果原图是网络图片，必须先下载到本地：
+
+```bash
+curl -L 'https://example.com/source.png' -o source.png
+```
+
+然后用 `@` 上传本地文件：
 
 ```bash
 curl --noproxy '*' "$SUBLB_IMAGE_BASE_URL/images/edits" \
@@ -106,6 +114,20 @@ curl --noproxy '*' "$SUBLB_IMAGE_BASE_URL/images/edits" \
 
 ```text
 data[0].b64_json
+```
+
+错误示例：下面这种写法不会让 curl 自动下载网络图片，它只是把 URL 当成普通文本字段发送，上游拿不到真实图片文件，可能返回 502。
+
+```bash
+# 错误：image 是 URL 文本，不是 multipart 文件
+-F "image=https://example.com/source.png;type=image/png"
+```
+
+正确示例：
+
+```bash
+# 正确：image 是本地文件上传
+-F "image=@./source.png;type=image/png"
 ```
 
 ## 6. 遮罩局部编辑 curl 示例
@@ -137,8 +159,15 @@ curl --noproxy '*' "$SUBLB_IMAGE_BASE_URL/images/edits" \
 | `model=gpt-img-2` | 不是当前推荐模型名 | `model=gpt-image-2` |
 | `model=gpt-image-edit` | 编辑也不使用这个模型名 | `model=gpt-image-2` |
 | JSON body 里放 `image` / `mask` | 图片编辑接口需要 multipart | 用 `-F "image=@./source.png"`、`-F "mask=@./mask.png"` |
+| `-F "image=https://example.com/a.png;type=image/png"` | 这只是 URL 文本，不是文件上传；curl 不会自动下载，可能返回 502 | 先 `curl -L URL -o source.png`，再 `-F "image=@./source.png;type=image/png"` |
 | 手写 multipart `Content-Type` boundary | 容易破坏请求体 | 让 curl / Postman / SDK 自动生成 |
 | 只测 `/v1/models` 就认为可用 | 模型枚举不等于业务接口成功 | 至少真实调用一次生成或编辑接口 |
+
+### 网络图片 URL 排障补充
+
+2026-05-01 复测过一个典型错误：把抖音头像 URL 直接写成 `-F "image=https://...png;type=image/png"`，接口返回 `502`。同一张图片先下载到本地，再使用 `-F "image=@./source.png;type=image/png"` 上传，接口返回 `HTTP 200` 并返回 `data[0].b64_json`。
+
+所以遇到图片编辑 502 时，先检查 `image` / `mask` 是否真的是 multipart 文件字段。网络图片不是不能用，但必须先下载成文件再上传。
 
 ## 8. 真实验收记录
 
