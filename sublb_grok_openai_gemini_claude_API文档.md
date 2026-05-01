@@ -1,8 +1,8 @@
 # SubLB Grok / OpenAI / Gemini / Claude API 接入指南
 
-测试日期：2026-04-30
+测试日期：2026-05-01
 
-文档版本：v1.8
+文档版本：v1.9
 
 ## 开篇：先把接入路径说清楚
 
@@ -302,6 +302,8 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/responses" \
 
 OpenAI 图片分组推荐 `gpt-image-2`；Grok 图片分组推荐 `grok-imagine-1.0`。
 
+`gpt-image-2` 的生图、图片编辑、遮罩编辑完整 multipart 示例见专项文档：[gpt-image-2使用指南.md](gpt-image-2使用指南.md)。
+
 ### OpenAI 生图示例
 
 ```bash
@@ -361,7 +363,9 @@ Grok 图片常见返回：
 
 ## 10. 图片编辑 `/v1/images/edits`
 
-图片编辑使用 OpenAI 风格 multipart/form-data。OpenAI 图片分组使用 `gpt-image-2`。
+图片编辑使用 OpenAI 风格 multipart/form-data。OpenAI 图片分组使用 `gpt-image-2`。同一个模型也用于遮罩局部编辑，不要写成 `gpt-image-edit`。
+
+完整说明见专项文档：[gpt-image-2使用指南.md](gpt-image-2使用指南.md)。
 
 ```bash
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
