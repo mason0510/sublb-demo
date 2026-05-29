@@ -8,6 +8,7 @@ SubLB API 的公开 Demo 仓库，用一套 Base URL 演示 Grok、OpenAI、Gemi
 - 认证：`Authorization: Bearer <YOUR_SUBLB_API_KEY>`
 - 完整文档：[sublb_grok_openai_gemini_claude_API文档.md](sublb_grok_openai_gemini_claude_API文档.md)
 - `gpt-image-2` 生图、修图、遮罩编辑专项：[gpt-image-2使用指南.md](gpt-image-2使用指南.md)
+- 生图新手使用指南：[生图新手使用指南.md](生图新手使用指南.md)
 
 ## 一张图看懂
 
