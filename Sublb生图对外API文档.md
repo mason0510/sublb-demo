@@ -4,11 +4,11 @@
 
 文档版本：v4.3
 
-> 本文档已升级迁移。新的对外文档不再只覆盖生图，而是统一覆盖 Grok / OpenAI / Gemini / Claude 的接入口径。
+> 本文档已升级迁移。新的对外文档不再只覆盖生图，而是统一覆盖 Grok / OpenAI / Gemini / Claude / DeepSeek 的接入口径。
 
 请使用新版文档：
 
-- [sublb_grok_openai_gemini_claude_API文档.md](sublb_grok_openai_gemini_claude_API文档.md)
+- [sublb_grok_openai_gemini_claude_deepseek_API文档.md](sublb_grok_openai_gemini_claude_deepseek_API文档.md)
 - `gpt-image-2` 专项使用指南：[gpt-image-2使用指南.md](gpt-image-2使用指南.md)
 
 图片相关入口请优先查看新版文档与专项指南中的以下章节：

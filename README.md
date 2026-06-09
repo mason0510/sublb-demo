@@ -1,35 +1,73 @@
 # sublb-demo
 
-SubLB API 的公开 Demo 仓库，用一套 Base URL 演示 Grok、OpenAI、Gemini、Claude 的常用接入方式。
+SubLB API 的公开 Demo 仓库，用一套 Base URL 演示 Grok、OpenAI、Gemini、Claude、DeepSeek 的常用接入方式。
 
 这个仓库解决一个很具体的问题：接入方拿到 SubLB 分组 Key 后，应该调用哪个接口、填哪个模型、按什么字段解析响应。
 
 - Base URL：`https://sub-lb.tap365.org`
 - 认证：`Authorization: Bearer <YOUR_SUBLB_API_KEY>`
-- 完整文档：[sublb_grok_openai_gemini_claude_API文档.md](sublb_grok_openai_gemini_claude_API文档.md)
+- 完整文档：[sublb_grok_openai_gemini_claude_deepseek_API文档.md](sublb_grok_openai_gemini_claude_deepseek_API文档.md)
 - `gpt-image-2` 生图、修图、遮罩编辑专项：[gpt-image-2使用指南.md](gpt-image-2使用指南.md)
 - 生图新手使用指南：[生图新手使用指南.md](生图新手使用指南.md)
+- Turing / turing-sdk 使用指南：[docs/turing-and-sdk-usage.md](docs/turing-and-sdk-usage.md)
+
+## Turing / turing-sdk 怎么选
+
+这个仓库不只提供裸 API curl，也提供面向用户和开发者的 Turing 接入路径：
+
+| 场景 | 推荐入口 | 说明 |
+|---|---|---|
+| 人工对话、临时排障、进入 TUI | `turing` | 给人用的 Turing Code 入口，适合交互式问答和排障。 |
+| Grok 第二意见 / Grok 文本任务 | `turinggrok` | Grok provider wrapper；当前文档口径要求走 OpenAI-compatible `chat/completions`。 |
+| DeepSeek 文本 / 读文件任务 | `turingdeepseek` | DeepSeek provider wrapper；如果原始接口 405，优先检查 base URL 和 `/v1/chat/completions` 路径。 |
+| Node.js 服务、脚本、队列、Agent | `turing-sdk` | npm SDK，适合后端集成和自动化任务，不建议直接放浏览器前端暴露 key。 |
+| Agent 示例收集 | [`turing-sdk-agent-demo/`](turing-sdk-agent-demo/) | 已放入 query、stream、Grok、DeepSeek、最小 Agent loop、routing、evaluator-optimizer、orchestrator-workers、客服 Agent、法律 intake Agent、skill loader、MCP-style 工具 Agent 示例。 |
+
+小白选择建议：
+
+1. 只是想打开一个像 Claude Code 一样的交互命令框：先装 `turing`，然后运行 `turing`。
+2. 想在终端直接用 Grok / DeepSeek：运行 `turinggrok` 或 `turingdeepseek`。
+3. 想把能力接到自己的 Node.js 项目、后端服务或 Agent：用 `turing-sdk`，先看 [`turing-sdk-agent-demo/README.md`](turing-sdk-agent-demo/README.md)。应用可以把本地 skill 文本放进 `turing-sdk` 的 `systemPrompt`；MCP 建议先由应用层调用工具，再把工具结果交给 SDK。
+4. 配 key 时只放环境变量或本机配置文件，不要写进代码和 README。
+
+## Turing 文档维护要求
+
+Turing 安装命令是用户可直接复制执行的公开命令，必须按真实可访问链接维护。
+
+当前已验证可用：
+
+```bash
+curl -fsSL https://turing.tap365.org/v1.1.7/install.sh | bash
+curl -fsSL https://turing.tap365.org/v1.1.7/setup-provider-wrappers.sh | bash
+```
+
+维护红线：
+
+- 改版本号前必须先验证远端脚本返回 200，例如：
+  `curl --noproxy '*' -fsSIL https://turing.tap365.org/vX.Y.Z/install.sh`
+- `install.sh` 和 `setup-provider-wrappers.sh` 都验证通过后，才能写入 README / docs / 安装页。
+- 禁止把未发布、返回 404、或只凭本地版本猜出来的安装链接写进用户可见文档。
 
 ## 一张图看懂
 
-```mermaid
-flowchart TD
-  A[选择 SubLB 分组 Key] --> B{业务场景}
-  B -->|文本对话| C["/v1/chat/completions"]
-  B -->|Responses 客户端| D["/v1/responses"]
-  B -->|生图| E["/v1/images/generations"]
-  B -->|图片编辑| F["/v1/images/edits"]
-  B -->|Claude 原生| G["/v1/messages"]
-  B -->|Gemini 原生文本/图片| H["/v1beta/models/{model}:generateContent"]
-
-  C --> C1[grok-4.1-fast / gpt-5.5]
-  D --> D1[grok-4.1-fast / gpt-5.5]
-  E --> E1[gpt-image-2 / grok-imagine-1.0]
-  F --> F1[gpt-image-2]
-  G --> G1[claude-sonnet-4-5-20250929 / claude-opus-4-6]
-  H --> H1[gemini-3.1-pro-preview / gemini-3-flash-preview]
-  H --> H2[gemini-3-pro-image / gemini-3.1-flash-image-preview / gemini-3.1-flash-image]
+```text
+拿到 SubLB 分组 Key
+└── 先确认 Key 属于哪个后台分组
+    ├── spark / start / pro / ultra / Standard / GPT basic -> OpenAI-compatible
+    │   └── /v1/chat/completions 或 /v1/responses
+    ├── DeepSeek Basic / deepseek -> DeepSeek OpenAI-compatible
+    │   └── /v1/chat/completions 或 /v1/responses
+    ├── Grok 文本和图片 / Grok-codex 文图统一 -> Grok 文本和图片
+    │   └── /v1/chat/completions 或 /v1/images/generations
+    ├── open-img分组包月 -> OpenAI 图片
+    │   └── /v1/images/generations 或 /v1/images/edits
+    ├── claudecode特价 -> Claude Messages
+    │   └── /v1/messages
+    └── gemini（文本和图片） -> Gemini 原生
+        └── /v1beta/models/{model}:generateContent
 ```
+
+一个 Key 只代表一个后台分组的权限。不要按“全平台万能 Key”理解。
 
 ## 快速开始
 
@@ -44,7 +82,7 @@ cp .env.example .env
 ```bash
 SUBLB_BASE_URL="https://sub-lb.tap365.org"
 SUBLB_API_KEY="your_api_key_here"
-SUBLB_MODEL="grok-4.1-fast"
+SUBLB_MODEL="deepseek-v4-flash"
 ```
 
 导入环境变量：
@@ -59,43 +97,28 @@ set +a
 
 ## 当前接入口径
 
-测试日期：2026-05-01
+测试日期：2026-06-08
 
-文档版本：v1.8
+文档版本：v4.0
 
-| 场景 | Provider | 推荐模型 | 推荐接口 | 响应重点 |
+| 后台分组 | 适合做什么 | 推荐接口 | 推荐模型 | 本轮 smoke |
 |---|---|---|---|---|
-| 文本对话 | Grok | `grok-4.1-fast` | `POST /v1/chat/completions` | `choices[0].message.content` |
-| Responses | Grok | `grok-4.1-fast` | `POST /v1/responses` | `status=completed` |
-| 文本对话 | OpenAI | `gpt-5.5` | `POST /v1/chat/completions` | `choices[0].message.content` |
-| Responses | OpenAI | `gpt-5.5` | `POST /v1/responses` | `status=completed` |
-| 生图 | OpenAI | `gpt-image-2` | `POST /v1/images/generations` | `data[0].b64_json` |
-| 图片编辑 | OpenAI | `gpt-image-2` | `POST /v1/images/edits` | `data[0].b64_json` |
-| 生图 | Grok | `grok-imagine-1.0` | `POST /v1/images/generations` | `data[0].url` |
-| Gemini 原生文本 | Gemini | `gemini-3.1-pro-preview` / `gemini-3-flash-preview` | `POST /v1beta/models/{model}:generateContent` | `candidates[0].content.parts[].text` |
-| Gemini 原生图片 | Gemini | `gemini-3-pro-image` / `gemini-3.1-flash-image-preview` / `gemini-3.1-flash-image` | `POST /v1beta/models/{model}:generateContent` | `candidates[0].content.parts[].inlineData.data` |
-| Claude 原生 | Claude | `claude-sonnet-4-5-20250929` | `POST /v1/messages` | `content[].text` |
-| Claude 原生 | Claude | `claude-opus-4-6` | `POST /v1/messages` | `content[].text` |
+| `spark` | GPT PRO+GPT plus 轻量入门档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | chat、responses 通过 |
+| `start` | GPT PRO+GPT plus 稳定入门档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | chat、responses 通过 |
+| `pro` | GPT PRO+GPT plus 进阶生产档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | chat、responses 通过 |
+| `ultra` | GPT PRO+GPT plus 旗舰稳定档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | chat、responses 通过 |
+| `Standard` | GPT PRO+GPT plus 主力档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | chat、responses 通过 |
+| `GPT basic` | gpt plus 普通入门档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | chat、responses 通过 |
+| `DeepSeek Basic` | DeepSeek 通用接入 | `/v1/chat/completions`、`/v1/responses` | `deepseek-v4-flash`、`deepseek-v4-pro` | chat 两个模型通过；responses flash 通过 |
+| `deepseek` | DeepSeek 按量测试 | `/v1/chat/completions`、`/v1/responses` | `deepseek-v4-pro` | responses pro 通过；其他本轮超时 |
+| `Grok 文本和图片` | Grok 文本、Grok 生图 | `/v1/chat/completions`、`/v1/images/generations` | `grok-4.1-fast`、`grok-imagine-1.0` | 文本通过 |
+| `Grok-codex 文图统一月订阅20260430(普通)` | Grok 文图普通套餐 | `/v1/chat/completions`、`/v1/images/generations` | `grok-4.1-fast`、`grok-imagine-1.0` | 文本通过 |
+| `Grok-codex 文图统一月订阅20260430(高级)` | Grok 文图高级套餐 | `/v1/chat/completions`、`/v1/images/generations` | `grok-4.1-fast`、`grok-imagine-1.0` | 文本通过 |
+| `open-img分组包月` | OpenAI 生图、图片编辑 | `/v1/images/generations`、`/v1/images/edits` | `gpt-image-2` | 本轮未测，见生图专项文档 |
+| `claudecode特价` | Claude 原生 Messages | `/v1/messages` | `claude-sonnet-4-5-20250929` | 通过 |
+| `gemini（文本和图片）` | Gemini 原生文本和图片 | `/v1beta/models/{model}:generateContent` | `gemini-3-flash-preview` 等 | 本轮 503，无可用 Gemini 账号 |
 
-未列出的模型不在 README 的推荐范围内。实际可用能力以你的分组 Key 和业务接口调用结果为准。
-
-> Gemini 当前按 Google 原生 `/v1beta/models/{model}:generateContent` 接入。未列出的 Gemini 模型不在当前推荐范围内。
-
-## 各平台模型与核心使用
-
-| 平台 | 推荐模型 | 核心能力 | 怎么用 |
-|---|---|---|---|
-| OpenAI | `gpt-5.5` | 文本对话、Responses | 用 OpenAI-compatible 的 `/v1/chat/completions` 或 `/v1/responses`，按文本字段解析。 |
-| OpenAI | `gpt-image-2` | 生图、图片编辑 | 生图走 `/v1/images/generations`；编辑走 `/v1/images/edits`；图片通常读取 `data[0].b64_json`。 |
-| Grok | `grok-4.1-fast` | 文本对话、Responses | 用 `/v1/chat/completions` 或 `/v1/responses`，适合快速文本问答。 |
-| Grok | `grok-imagine-1.0` | 生图 | 用 `/v1/images/generations`，图片通常读取 `data[0].url`。 |
-| Gemini | `gemini-3.1-pro-preview` | 原生文本 | 用 `/v1beta/models/{model}:generateContent`，适合 Gemini 原生文本生成。 |
-| Gemini | `gemini-3-flash-preview` | 原生文本 | 用 `/v1beta/models/{model}:generateContent`，适合更快的 Gemini 文本生成。 |
-| Gemini | `gemini-3-pro-image` | 原生生图 | 用 `/v1beta/models/{model}:generateContent`，图片读取 `inlineData.data`。 |
-| Gemini | `gemini-3.1-flash-image-preview` | 原生生图 | 用 `/v1beta/models/{model}:generateContent`，适合 Gemini Flash 图片生成。 |
-| Gemini | `gemini-3.1-flash-image` | 原生生图 | 用 `/v1beta/models/{model}:generateContent`，图片读取 base64 `inlineData.data`。 |
-| Claude | `claude-sonnet-4-5-20250929` | 原生 Messages 文本 | 用 `/v1/messages`，按 Anthropic Messages 的 `content[].text` 解析。 |
-| Claude | `claude-opus-4-6` | 原生 Messages 文本 | 用 `/v1/messages`，适合高质量文本对话。 |
+`super` 本轮月额度超限，暂不作为 README 可用示例。`Old*`、`用户勿选`、`自测`、`状态探针` 分组也不作为 README 推荐接入示例。
 
 ## 最小 curl 示例
 
@@ -107,7 +130,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/models" \
   -H "Accept: application/json"
 ```
 
-### 2. 文本对话
+### 2. DeepSeek 文本对话
 
 ```bash
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
@@ -115,13 +138,16 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{
-    "model": "gpt-5.5",
+    "model": "deepseek-v4-flash",
     "stream": false,
     "messages": [
-      {"role": "user", "content": "只回复 OK"}
-    ]
+      {"role": "user", "content": "只回复 SUBLB_OK"}
+    ],
+    "max_tokens": 32
   }'
 ```
+
+读取：`choices[0].message.content`。
 
 ### 3. Responses
 
@@ -131,13 +157,51 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/responses" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{
-    "model": "gpt-5.5",
+    "model": "deepseek-v4-flash",
     "stream": false,
-    "input": "只回复 OK"
+    "input": "只回复 SUBLB_RESPONSES_OK",
+    "max_output_tokens": 32
   }'
 ```
 
-### 4. 生图
+读取：`output_text` 或 `output[].content[].text`。
+
+### 4. Claude Messages
+
+```bash
+curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
+  -H "Authorization: Bearer $SUBLB_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "model": "claude-sonnet-4-5-20250929",
+    "max_tokens": 64,
+    "messages": [
+      {"role": "user", "content": "只回复 SUBLB_CLAUDE_OK"}
+    ]
+  }'
+```
+
+读取：`content[].text`。
+
+### 5. Gemini 原生文本
+
+```bash
+curl --noproxy '*' "$SUBLB_BASE_URL/v1beta/models/gemini-3-flash-preview:generateContent" \
+  -H "x-goog-api-key: $SUBLB_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "contents": [
+      {"role": "user", "parts": [{"text": "只回复 SUBLB_GEMINI_OK"}]}
+    ],
+    "generationConfig": {"maxOutputTokens": 32, "temperature": 0}
+  }'
+```
+
+读取：`candidates[0].content.parts[].text`。注意：本轮 `gemini（文本和图片）` 返回 503，无可用 Gemini 账号，当前不写成已通过。
+
+### 6. 图片生成
 
 ```bash
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/generations" \
@@ -152,53 +216,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/generations" \
   }'
 ```
 
-
-### 5. Gemini 原生文本
-
-```bash
-curl --noproxy '*' "$SUBLB_BASE_URL/v1beta/models/gemini-3-flash-preview:generateContent" \
-  -H "x-goog-api-key: $SUBLB_API_KEY" \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json" \
-  -d '{
-    "contents": [
-      {"role": "user", "parts": [{"text": "只回复 OK"}]}
-    ],
-    "generationConfig": {"maxOutputTokens": 32, "temperature": 0}
-  }'
-```
-
-可替换文本模型：`gemini-3.1-pro-preview`、`gemini-3-flash-preview`。
-
-### 6. Gemini 原生图片
-
-```bash
-curl --noproxy '*' "$SUBLB_BASE_URL/v1beta/models/gemini-3.1-flash-image:generateContent" \
-  -H "x-goog-api-key: $SUBLB_API_KEY" \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json" \
-  -d '{
-    "contents": [
-      {"role": "user", "parts": [{"text": "White background, small green leaf icon, clean vector style"}]}
-    ],
-    "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]}
-  }'
-```
-
-可替换图片模型：`gemini-3-pro-image`、`gemini-3.1-flash-image-preview`、`gemini-3.1-flash-image`。图片内容读取 `candidates[0].content.parts[].inlineData.data`，通常为 base64 图片数据。
-
-### 7. 图片编辑
-
-```bash
-curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
-  -H "Authorization: Bearer $SUBLB_API_KEY" \
-  -H "Accept: application/json" \
-  -F "model=gpt-image-2" \
-  -F "prompt=把这张图改成更亮一点的蓝色风格" \
-  -F "image=@./source.png" \
-  -F "size=1024x1024" \
-  -F "response_format=b64_json"
-```
+OpenAI 图片通常读取 `data[0].b64_json`；Grok 图片通常读取 `data[0].url`。
 
 ## 目录
 
@@ -206,7 +224,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
 sublb-demo/
 ├── .env.example
 ├── README.md
-├── sublb_grok_openai_gemini_claude_API文档.md
+├── sublb_grok_openai_gemini_claude_deepseek_API文档.md
 ├── gpt-image-2使用指南.md
 ├── Sublb生图对外API文档.md
 ├── QA常见问题.md
@@ -214,6 +232,9 @@ sublb-demo/
 ├── examples/
 │   ├── curl/
 │   └── python/
+├── turing-sdk-agent-demo/
+│   ├── README.md
+│   └── examples/
 └── tests/
     └── sublb_openai_compatible_smoke.hurl
 ```
