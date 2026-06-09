@@ -27,14 +27,16 @@
 命令行安装示例：
 
 ```bash
-curl -fsSL https://turing.tap365.org/v1.1.6/install.sh | bash
+curl -fsSL https://turing.tap365.org/v1.1.7/install.sh | bash
 ```
 
 如果需要安装 provider wrapper：
 
 ```bash
-curl -fsSL https://turing.tap365.org/v1.1.6/setup-provider-wrappers.sh | bash
+curl -fsSL https://turing.tap365.org/v1.1.7/setup-provider-wrappers.sh | bash
 ```
+
+维护要求：以上安装脚本是用户可见命令，更新版本号前必须先用 `curl -fsSIL` 或真实下载验证返回 200；不要把未发布或返回 404 的版本号写进公开文档。
 
 常见入口：
 
