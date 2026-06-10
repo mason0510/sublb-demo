@@ -61,8 +61,8 @@ curl -fsSL https://turing.tap365.org/v1.1.7/setup-provider-wrappers.sh | bash
     │   └── /v1/chat/completions 或 /v1/images/generations
     ├── open-img分组包月 -> OpenAI 图片
     │   └── /v1/images/generations 或 /v1/images/edits
-    ├── claudecode特价 -> Claude Messages
-    │   └── /v1/messages
+    ├── claudecode特价 -> Claude Messages / Claude Fable 5
+    │   └── /v1/messages；claude-fable-5 也支持 /v1/responses 非流式 JSON
     └── gemini（文本和图片） -> Gemini 原生
         └── /v1beta/models/{model}:generateContent
 ```
@@ -97,9 +97,9 @@ set +a
 
 ## 当前接入口径
 
-测试日期：2026-06-08
+测试日期：2026-06-10
 
-文档版本：v4.0
+文档版本：v4.1
 
 | 后台分组 | 适合做什么 | 推荐接口 | 推荐模型 | 本轮 smoke |
 |---|---|---|---|---|
@@ -115,7 +115,7 @@ set +a
 | `Grok-codex 文图统一月订阅20260430(普通)` | Grok 文图普通套餐 | `/v1/chat/completions`、`/v1/images/generations` | `grok-4.1-fast`、`grok-imagine-1.0` | 文本通过 |
 | `Grok-codex 文图统一月订阅20260430(高级)` | Grok 文图高级套餐 | `/v1/chat/completions`、`/v1/images/generations` | `grok-4.1-fast`、`grok-imagine-1.0` | 文本通过 |
 | `open-img分组包月` | OpenAI 生图、图片编辑 | `/v1/images/generations`、`/v1/images/edits` | `gpt-image-2` | 本轮未测，见生图专项文档 |
-| `claudecode特价` | Claude 原生 Messages | `/v1/messages` | `claude-sonnet-4-5-20250929` | 通过 |
+| `claudecode特价` | Claude 原生 Messages、Claude Fable 5 | `/v1/messages`；`/v1/responses` 非流式 JSON | `claude-fable-5`、`claude-haiku-4-5-20251001`、`claude-opus-4-6/4-7/4-8`、`claude-sonnet-4-6` | `/v1/messages` 非流式 6 个模型通过；`claude-fable-5` `/v1/messages` stream 通过；`/v1/responses` 非流式通过 |
 | `gemini（文本和图片）` | Gemini 原生文本和图片 | `/v1beta/models/{model}:generateContent` | `gemini-3-flash-preview` 等 | 本轮 503，无可用 Gemini 账号 |
 
 `super` 本轮月额度超限，暂不作为 README 可用示例。`Old*`、`用户勿选`、`自测`、`状态探针` 分组也不作为 README 推荐接入示例。
@@ -174,7 +174,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{
-    "model": "claude-sonnet-4-5-20250929",
+    "model": "claude-fable-5",
     "max_tokens": 64,
     "messages": [
       {"role": "user", "content": "只回复 SUBLB_CLAUDE_OK"}
@@ -183,6 +183,28 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
 ```
 
 读取：`content[].text`。
+
+### Claude Fable 5 与 Claude 4.x 模型
+
+本轮重点按 Anthropic 原生 `/v1/messages` 验收，不把 `/v1/chat/completions` 作为 Claude 默认接入口径。
+
+| 模型 | `/v1/messages` 非流式 | 备注 |
+|---|---|---|
+| `claude-fable-5` | 200，返回 `pong` | 支持 `/v1/messages` stream；支持 `/v1/responses` 非流式 JSON |
+| `claude-haiku-4-5-20251001` | 200，返回 `pong` | - |
+| `claude-opus-4-6` | 200，返回 `pong` | - |
+| `claude-opus-4-7` | 200，返回 `pong` | - |
+| `claude-opus-4-8` | 200，返回 `pong` | - |
+| `claude-sonnet-4-6` | 200，返回 `pong` | - |
+
+接口边界：
+
+- `/v1/messages`：支持非流式；`claude-fable-5` 流式实测 200，返回标准 SSE 事件。
+- `/v1/responses`：`claude-fable-5` 支持非流式 JSON，实测 200；`status=incomplete` 可能只是 `max_output_tokens` 太小。
+- `/v1/responses` + `stream:true`：本轮未通过，不建议作为默认写法。
+- `/v1/complete`：本轮 404，不支持。
+- `/v1/response`：本轮 404，不支持。
+- 网络提示：如本机代理污染，可用 `--noproxy '*'`；如网络环境必须代理，先确认本机代理链路可用。
 
 ### 5. Gemini 原生文本
 

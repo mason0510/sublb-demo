@@ -1,6 +1,6 @@
 # SubLB API Reference
 
-测试日期：2026-06-08
+测试日期：2026-06-10
 
 文档版本：v4.1
 
@@ -23,7 +23,7 @@ https://sub-lb.tap365.org
 └── 确认这个 Key 属于哪个后台分组
     ├── OpenAI / DeepSeek / Grok 文本 -> /v1/chat/completions 或 /v1/responses
     ├── OpenAI / Grok 图片           -> /v1/images/generations 或 /v1/images/edits
-    ├── Claude 原生 Messages         -> /v1/messages
+    ├── Claude 原生 Messages         -> /v1/messages；claude-fable-5 可用 /v1/responses 非流式 JSON
     └── Gemini 原生接口              -> /v1beta/models/{model}:generateContent
 ```
 
@@ -83,7 +83,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/models" \
 | `Grok 文本和图片` | Grok | 按量 | Grok 文本、Grok 生图 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片本轮未测，需按图片接口单独 smoke |
 | `Grok-codex 文图统一月订阅20260430(普通)` | Grok | 订阅 / 专属 | Grok 文图统一普通套餐 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片本轮未测，需按图片接口单独 smoke |
 | `Grok-codex 文图统一月订阅20260430(高级)` | Grok | 订阅 / 专属 | Grok 文图统一高级套餐 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片本轮未测，需按图片接口单独 smoke |
-| `claudecode特价` | Anthropic | 按量 | Claude 原生 Messages | `/v1/messages` | `claude-sonnet-4-5-20250929` | Messages 通过 |
+| `claudecode特价` | Anthropic | 按量 | Claude 原生 Messages、Claude Fable 5 | `/v1/messages`；`/v1/responses` 非流式 JSON | `claude-fable-5`、`claude-haiku-4-5-20251001`、`claude-opus-4-6/4-7/4-8`、`claude-sonnet-4-6` | Messages 非流式 6 个模型通过；`claude-fable-5` Messages stream 通过；Responses 非流式通过 |
 
 ### 2.2 后台存在，但本文不作为“可直接用”推荐的分组
 
@@ -341,7 +341,7 @@ POST /v1/messages
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---:|---|
-| `model` | string | 是 | 例如 `claude-sonnet-4-5-20250929` |
+| `model` | string | 是 | 例如 `claude-fable-5` |
 | `messages` | array | 是 | Anthropic Messages 数组 |
 | `max_tokens` | number | 是 | 最大输出 token 数 |
 
@@ -353,7 +353,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{
-    "model": "claude-sonnet-4-5-20250929",
+    "model": "claude-fable-5",
     "max_tokens": 64,
     "messages": [
       {"role": "user", "content": "只回复 SUBLB_CLAUDE_OK"}
@@ -367,7 +367,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
 {
   "type": "message",
   "role": "assistant",
-  "model": "claude-sonnet-4-5-20250929",
+  "model": "claude-fable-5",
   "content": [
     {"type": "text", "text": "SUBLB_CLAUDE_OK"}
   ],
@@ -377,7 +377,29 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
 
 读取字段：`content[].text`。
 
-本轮实测：`claudecode特价` + `claude-sonnet-4-5-20250929` 通过；`cc特价` 的 `/v1/messages` 返回上游 502，暂不作为 Messages 稳定示例。
+本轮实测：`claudecode特价` 重点模型均通过 Anthropic 原生 `/v1/messages` 非流式业务验收；`claude-fable-5` 另通过 `/v1/messages` 流式和 `/v1/responses` 非流式 JSON 验收。`cc特价` 的 `/v1/messages` 返回上游 502，暂不作为 Messages 稳定示例。
+
+### 6.1 Claude Fable 5 与 Claude 4.x 模型
+
+本轮 Claude 口径以 Anthropic 原生 `/v1/messages` 为主，不把 `/v1/chat/completions` 作为默认 Claude 接入口径。
+
+| 模型 | `/v1/messages` 非流式 | 备注 |
+|---|---|---|
+| `claude-fable-5` | 200，返回 `pong` | 支持 `/v1/messages` stream；支持 `/v1/responses` 非流式 JSON |
+| `claude-haiku-4-5-20251001` | 200，返回 `pong` | - |
+| `claude-opus-4-6` | 200，返回 `pong` | - |
+| `claude-opus-4-7` | 200，返回 `pong` | - |
+| `claude-opus-4-8` | 200，返回 `pong` | - |
+| `claude-sonnet-4-6` | 200，返回 `pong` | - |
+
+接口边界：
+
+- `/v1/messages`：支持非流式；`claude-fable-5` 流式实测 200，返回 `message_start`、`content_block_delta`、`message_stop` 等标准 SSE 事件。
+- `/v1/responses`：`claude-fable-5` 支持非流式 JSON，实测 200；`status=incomplete` 可能只是 `max_output_tokens` 太小。
+- `/v1/responses` + `stream:true`：本轮未通过，返回上游认证错误，不建议作为默认写法。
+- `/v1/complete`：本轮 404，不支持。
+- `/v1/response`：本轮 404，不支持。
+- 网络提示：如本机代理污染，可用 `--noproxy '*'`；如网络环境必须代理，先确认本机代理链路可用。
 
 ---
 
@@ -476,7 +498,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
 | `Grok 文本和图片` | 200 | `grok-4.1-fast` chat 200，通过 |
 | `Grok-codex 文图统一月订阅20260430(普通)` | 200 | `grok-4.1-fast` chat 200，通过 |
 | `Grok-codex 文图统一月订阅20260430(高级)` | 200 | `grok-4.1-fast` chat 200，通过 |
-| `claudecode特价` | 200 | `claude-sonnet-4-5-20250929` messages 200，通过 |
+| `claudecode特价` | 200 | 6 个重点 Claude 模型 `/v1/messages` 非流式 200，返回 `pong`；`claude-fable-5` `/v1/messages` stream 200；`claude-fable-5` `/v1/responses` 非流式 200；`/v1/complete` 和 `/v1/response` 404 |
 | `Codex-star（内部邀请分组）` | 403 | `SUBSCRIPTION_NOT_FOUND` |
 | `Trial1` | 403 | `SUBSCRIPTION_NOT_FOUND` |
 | `start套餐升级` | 未测 | 本轮无 active API key |
