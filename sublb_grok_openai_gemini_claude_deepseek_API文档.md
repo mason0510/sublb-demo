@@ -16,20 +16,76 @@ https://sub-lb.tap365.org
 
 ## 1. Start here
 
-### 1.1 最短使用流程
+这一节只解决一个问题：**第一次拿到 Key，怎么最快确认它能用。**
 
-```text
-拿到 SubLB API Key
-└── 确认这个 Key 属于哪个后台分组
-    ├── OpenAI / DeepSeek / Grok 文本 -> /v1/chat/completions 或 /v1/responses
-    ├── OpenAI / Grok 图片           -> /v1/images/generations 或 /v1/images/edits
-    ├── Claude 原生 Messages         -> /v1/messages；claude-fable-5 可用 /v1/responses 非流式 JSON
-    └── Gemini 原生接口              -> /v1beta/models/{model}:generateContent
+如果你是第一次接入，不要先读后面的长表。先按下面 4 步走。
+
+### 1.1 先准备环境变量
+
+```bash
+export SUBLB_BASE_URL="https://sub-lb.tap365.org"
+export SUBLB_API_KEY="替换成你的 SubLB API Key"
 ```
 
-一个 Key 只代表一个后台分组的权限。不要假设“一个 Key 能调用全部平台”。
+不要把真实 Key 写进代码、README、截图或公开 issue。
 
-### 1.2 认证
+### 1.2 先确认你的 Key 属于哪个分组
+
+SubLB 的 Key 不是“全平台万能 Key”。它通常属于一个后台分组，分组决定：
+
+- 能用哪个接口；
+- 能填哪个模型；
+- 额度和计费怎么算；
+- 返回字段应该怎么读。
+
+如果你不知道分组，先问发 Key 的人。不要靠猜模型名硬试。
+
+### 1.3 复制一个最小文本请求
+
+OpenAI / GPT / Codex / DeepSeek / Grok 文本，一般先用 OpenAI-compatible Chat Completions：
+
+```bash
+curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
+  -H "Authorization: Bearer $SUBLB_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-5.5",
+    "stream": false,
+    "messages": [
+      {"role": "user", "content": "只回复 SUBLB_OK"}
+    ],
+    "max_tokens": 32
+  }'
+```
+
+成功时读取：
+
+```text
+choices[0].message.content
+```
+
+按分组改模型：
+
+| 分组/用途 | 先填的模型 |
+|---|---|
+| OpenAI / GPT / Codex | `gpt-5.5` |
+| DeepSeek | `deepseek-v4-flash` 或 `deepseek-v4-pro` |
+| Grok 文本 | `grok-4.1-fast` |
+
+Claude 不走这个接口，见 [Claude Messages](#6-claude-messages)。图片不走这个接口，见 [Images](#5-images-generations--edits)。Gemini 走原生接口，见 [Gemini generateContent](#7-gemini-原生-generatecontent)。
+
+### 1.4 按 Key 类型选接口
+
+| 你手上的 Key | 推荐接口 | 读取字段 |
+|---|---|---|
+| OpenAI / GPT / Codex 文本 | `/v1/chat/completions` 或 `/v1/responses` | Chat: `choices[0].message.content`；Responses: `output_text` |
+| DeepSeek 文本 | `/v1/chat/completions` 或 `/v1/responses` | 同上 |
+| Grok 文本 | `/v1/chat/completions` | `choices[0].message.content` |
+| Claude | `/v1/messages` | `content[].text` |
+| OpenAI / Grok 图片 | `/v1/images/generations` 或 `/v1/images/edits` | `data[0].b64_json` 或 `data[0].url` |
+| Gemini | `/v1beta/models/{model}:generateContent` | `candidates[0].content.parts[].text` |
+
+### 1.5 认证方式
 
 OpenAI-compatible、Grok、DeepSeek、Claude、图片接口使用 Bearer：
 
@@ -47,18 +103,26 @@ Content-Type: application/json
 Accept: application/json
 ```
 
-### 1.3 先测模型列表
+### 1.6 模型列表只当辅助检查
 
 ```bash
-export SUBLB_BASE_URL="https://sub-lb.tap365.org"
-export SUBLB_API_KEY="你的分组 Key"
-
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/models" \
   -H "Authorization: Bearer $SUBLB_API_KEY" \
   -H "Accept: application/json"
 ```
 
-`/v1/models` 只能说明这个 Key 当前可见哪些模型；真正可用仍以业务接口实测为准。
+`/v1/models` 只能说明这个 Key 当前“看得到哪些模型”；真正可用仍以业务接口实测为准。
+
+### 1.7 新手排错顺序
+
+| 报错/现象 | 先查什么 |
+|---|---|
+| 401 / Unauthorized | Key 是否完整；Header 是否写成 `Authorization: Bearer ...` |
+| 404 | 路径是否写错；Claude 是 `/v1/messages` |
+| 405 | Base URL 或路径是否多拼/少拼 `/v1` |
+| 429 / limit | 分组额度、日限额、月限额是否用完 |
+| 502 / 503 | 上游账号暂不可用，换模型/分组或联系平台处理 |
+| JSON 返回了但不知道看哪里 | 先看上面的“读取字段”表 |
 
 ---
 

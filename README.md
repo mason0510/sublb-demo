@@ -1,15 +1,159 @@
 # sublb-demo
 
-SubLB API 的公开 Demo 仓库，用一套 Base URL 演示 Grok、OpenAI、Gemini、Claude、DeepSeek 的常用接入方式。
+SubLB API 的公开 Demo 仓库。它不是给平台开发者看的内部说明，而是给**第一次拿到 SubLB API Key 的接入方**看的上手文档。
 
-这个仓库解决一个很具体的问题：接入方拿到 SubLB 分组 Key 后，应该调用哪个接口、填哪个模型、按什么字段解析响应。
+你只需要先搞清楚 3 件事：
+
+1. 你的 Key 属于哪个分组。
+2. 这个分组应该调用哪个接口。
+3. 返回结果应该从哪个字段读取。
 
 - Base URL：`https://sub-lb.tap365.org`
-- 认证：`Authorization: Bearer <YOUR_SUBLB_API_KEY>`
-- 完整文档：[sublb_grok_openai_gemini_claude_deepseek_API文档.md](sublb_grok_openai_gemini_claude_deepseek_API文档.md)
-- `gpt-image-2` 生图、修图、遮罩编辑专项：[gpt-image-2使用指南.md](gpt-image-2使用指南.md)
-- 生图新手使用指南：[生图新手使用指南.md](生图新手使用指南.md)
+- 认证方式：`Authorization: Bearer <YOUR_SUBLB_API_KEY>`
+- 完整 API Reference：[sublb_grok_openai_gemini_claude_deepseek_API文档.md](sublb_grok_openai_gemini_claude_deepseek_API文档.md)
+- 生图新手指南：[生图新手使用指南.md](生图新手使用指南.md)
+- `gpt-image-2` 生图 / 修图 / 遮罩编辑：[gpt-image-2使用指南.md](gpt-image-2使用指南.md)
 - Turing / turing-sdk 使用指南：[docs/turing-and-sdk-usage.md](docs/turing-and-sdk-usage.md)
+
+## 30 秒快速开始
+
+### 第 1 步：准备 Key
+
+把你的 API Key 放到环境变量里。不要把真实 Key 写进代码、截图或公开 issue。
+
+```bash
+export SUBLB_BASE_URL="https://sub-lb.tap365.org"
+export SUBLB_API_KEY="替换成你的 SubLB API Key"
+```
+
+如果你不知道自己的 Key 属于哪个分组，先问发 Key 的人。分组决定你能用哪些模型。
+
+### 第 2 步：先复制这段测通文本对话
+
+大多数文本 Key 可以先用 OpenAI-compatible 接口测试：
+
+```bash
+curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
+  -H "Authorization: Bearer $SUBLB_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-5.5",
+    "stream": false,
+    "messages": [
+      {"role": "user", "content": "只回复 SUBLB_OK"}
+    ],
+    "max_tokens": 32
+  }'
+```
+
+成功时，你会在返回 JSON 里看到类似：
+
+```json
+{
+  "choices": [
+    {
+      "message": {
+        "content": "SUBLB_OK"
+      }
+    }
+  ]
+}
+```
+
+读取结果字段：`choices[0].message.content`。
+
+> 如果你的分组是 DeepSeek，把 `model` 改成 `deepseek-v4-flash` 或 `deepseek-v4-pro`。
+> 如果你的分组是 Grok，把 `model` 改成 `grok-4.1-fast`。
+> 如果你的分组是 Claude，不要用这个接口，直接看下面的 Claude 示例。
+
+### 第 3 步：按你的分组选择接口
+
+| 你拿到的 Key 类型 | 先用哪个接口 | 先填哪个模型 | 去看哪份文档 |
+|---|---|---|---|
+| OpenAI / GPT / Codex 文本 | `/v1/chat/completions` | `gpt-5.5` | [完整 API Reference](sublb_grok_openai_gemini_claude_deepseek_API文档.md#3-openai-compatible-chat-completions) |
+| DeepSeek 文本 | `/v1/chat/completions` | `deepseek-v4-flash` | [完整 API Reference](sublb_grok_openai_gemini_claude_deepseek_API文档.md#3-openai-compatible-chat-completions) |
+| Grok 文本 | `/v1/chat/completions` | `grok-4.1-fast` | [完整 API Reference](sublb_grok_openai_gemini_claude_deepseek_API文档.md#3-openai-compatible-chat-completions) |
+| Claude | `/v1/messages` | `claude-fable-5` | [Claude Messages 示例](sublb_grok_openai_gemini_claude_deepseek_API文档.md#6-claude-messages) |
+| OpenAI / Grok 图片 | `/v1/images/generations` | `gpt-image-2` 或 `grok-imagine-1.0` | [生图新手指南](生图新手使用指南.md) |
+| Gemini | `/v1beta/models/{model}:generateContent` | 按可用模型填写 | [Gemini 原生接口](sublb_grok_openai_gemini_claude_deepseek_API文档.md#7-gemini-原生-generatecontent) |
+
+一个 Key 通常只对应一个后台分组。不要按“一个 Key 能调用所有模型”理解。
+
+## 常见问题先看这里
+
+### Q1：我应该先用哪个模型？
+
+- GPT / OpenAI / Codex：先试 `gpt-5.5`。
+- DeepSeek：先试 `deepseek-v4-flash`。
+- Grok：先试 `grok-4.1-fast`。
+- Claude：先试 `claude-fable-5`，接口用 `/v1/messages`。
+- 图片：OpenAI 图片先试 `gpt-image-2`；Grok 图片先试 `grok-imagine-1.0`。
+
+### Q2：怎么知道我的 Key 能看到哪些模型？
+
+```bash
+curl --noproxy '*' "$SUBLB_BASE_URL/v1/models" \
+  -H "Authorization: Bearer $SUBLB_API_KEY"
+```
+
+注意：`/v1/models` 只能说明“能看到模型”，不等于业务接口一定能跑通。最终以 `/v1/chat/completions`、`/v1/responses`、`/v1/messages` 或图片接口实测为准。
+
+### Q3：请求失败先查什么？
+
+| 现象 | 优先检查 |
+|---|---|
+| 401 / Unauthorized | Key 是否复制完整，Header 是否是 `Authorization: Bearer ...` |
+| 404 | 路径是否写错，例如 Claude 是 `/v1/messages` 不是 `/v1/message` |
+| 405 | Base URL 或路径不对，确认是否多拼或少拼了 `/v1` |
+| 429 / 限额错误 | 分组额度、日限额、月限额是否已用完 |
+| 502 / 503 | 上游账号暂不可用，换模型/分组或联系平台处理 |
+| 返回字段不知道读哪里 | Chat 读 `choices[0].message.content`；Responses 读 `output_text`；Claude 读 `content[].text`；图片读 `data[0].url` 或 `data[0].b64_json` |
+
+## 最小 Claude 示例
+
+Claude 走 Anthropic Messages 风格接口：
+
+```bash
+curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
+  -H "Authorization: Bearer $SUBLB_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-fable-5",
+    "max_tokens": 64,
+    "messages": [
+      {"role": "user", "content": "只回复 SUBLB_CLAUDE_OK"}
+    ]
+  }'
+```
+
+读取结果字段：`content[].text`。
+
+## 最小图片示例
+
+```bash
+curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/generations" \
+  -H "Authorization: Bearer $SUBLB_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-image-2",
+    "prompt": "White background, simple blue letter O icon",
+    "size": "1024x1024",
+    "n": 1
+  }'
+```
+
+读取结果字段：OpenAI 图片通常是 `data[0].b64_json`，Grok 图片通常是 `data[0].url`。
+
+## 下一步看什么
+
+| 目标 | 文档 |
+|---|---|
+| 接 API、查字段、查模型 | [完整 API Reference](sublb_grok_openai_gemini_claude_deepseek_API文档.md) |
+| 新手做图片生成 | [生图新手使用指南.md](生图新手使用指南.md) |
+| 使用 `gpt-image-2` 做生图/修图/遮罩 | [gpt-image-2使用指南.md](gpt-image-2使用指南.md) |
+| 排查第三方客户端 | [第三方客户端问题汇总.md](第三方客户端问题汇总.md) |
+| 常见报错 | [QA常见问题.md](QA常见问题.md) |
+| 用 Node.js / Agent 集成 | [turing-sdk-agent-demo/README.md](turing-sdk-agent-demo/README.md) |
 
 ## Turing / turing-sdk 怎么选
 
