@@ -1,2 +1,0 @@
-status_time=200 4.144224
-path=/v1/responses

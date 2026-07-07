@@ -1,7 +1,0 @@
-.env
-node_modules/
-.tmp/
-__pycache__/
-*.pyc
-
-.trash/

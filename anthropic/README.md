@@ -1,5 +1,19 @@
 # Anthropic / Claude
 
-Claude / Anthropic 相关示例和说明放这里。
+Claude / Anthropic 相关接入口径。
 
-当前对外接入口径以主文档为准：Claude 文本接口优先使用 `/v1/messages`。
+小白先看根目录：
+
+1. `README.md`
+2. `API_TEST.md`
+3. `AI_AGENT.md`
+4. `API_REFERENCE.md`
+
+推荐 Claude 文本接口：
+
+```text
+POST /v1/messages
+Authorization: Bearer <SUBLB_API_KEY>
+```
+
+Claude 不要默认接到 `/v1/chat/completions`。

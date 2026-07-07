@@ -1,5 +1,19 @@
 # Gemini
 
-Gemini 相关示例和说明放这里。
+Gemini 相关接入口径。
 
-当前对外接入口径以主文档为准：Gemini 原生接口使用 `/v1beta/models/{model}:generateContent`，认证头使用 `x-goog-api-key: <SUBLB_API_KEY>`。
+小白先看根目录：
+
+1. `README.md`
+2. `API_TEST.md`
+3. `AI_AGENT.md`
+4. `API_REFERENCE.md`
+
+推荐使用 Gemini 原生接口：
+
+```text
+POST /v1beta/models/{model}:generateContent
+x-goog-api-key: <SUBLB_API_KEY>
+```
+
+不要把 Gemini 原生接口当成 OpenAI-compatible 接口。

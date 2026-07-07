@@ -2,41 +2,42 @@
 
 SubLB API 的公开 Demo 仓库。
 
-这不是平台内部说明书，而是给**第一次拿到 SubLB API Key 的接入方**准备的测试文档入口。
+这不是平台内部说明书，而是给**第一次拿到 SubLB API Key 的接入方**准备的 API 测试入口。
 
 ---
 
 ## 新手三步走
 
-1. 先看 [API 测试文档（Postman / Apifox 风格）](docs/postman-apifox-api-test.md)。
-2. 不懂 Key、Base URL、模型、返回字段时，看 [API 测试解释说明](docs/api-test-explainer.md)。
-3. 让 AI / Cursor / Claude Code / Codex 帮你接入时，把 [AI Agent 接入说明](docs/ai-agent-instructions.md) 发给它。
+1. 打开 `API_TEST.md`：按 Postman / Apifox 风格跑通接口。
+2. 如果让 AI / Cursor / Claude Code / Codex 帮你接入，把 `AI_AGENT.md` 发给它。
+3. 需要查完整字段、模型边界、错误码，再看 `API_REFERENCE.md`。
 
 ---
 
-## 先看哪份文档
+## 根目录只保留这些
 
-| 你现在要做什么 | 看哪份文档 |
-|---|---|
-| 用 Postman / Apifox / curl 跑通接口 | [SubLB API 测试文档（Postman / Apifox 风格）](docs/postman-apifox-api-test.md) |
-| 不理解 Key、Base URL、分组、模型、返回字段 | [API 测试解释说明](docs/api-test-explainer.md) |
-| 让 AI / Cursor / Claude Code / Codex 帮你接入 | [AI Agent 接入说明](docs/ai-agent-instructions.md) |
-| 查完整接口字段、模型边界、分组清单 | [完整 API Reference](sublb_grok_openai_gemini_claude_deepseek_API文档.md) |
+```text
+sublb-demo/
+├── README.md          # 你现在看的入口
+├── API_TEST.md        # 给小白 / Postman / Apifox 的接口测试文档
+├── AI_AGENT.md        # 给 AI Agent 看的接入提示词
+├── API_REFERENCE.md   # 完整 API Reference
+├── openai/            # OpenAI / GPT / Codex 说明
+├── gemini/            # Gemini 说明
+├── grok/              # Grok 说明
+└── anthropic/         # Claude / Anthropic 说明
+```
+
+`.env.example`、`.gitignore`、`LICENSE` 是仓库必要文件，不是接口文档入口。
 
 ---
 
 ## 30 秒跑通一个文本请求
 
-先设置环境变量：
-
 ```bash
 export SUBLB_BASE_URL="https://sub-lb.tap365.org"
 export SUBLB_API_KEY="替换成你的 SubLB API Key"
-```
 
-再请求文本接口：
-
-```bash
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
   -H "Authorization: Bearer $SUBLB_API_KEY" \
   -H "Content-Type: application/json" \
@@ -56,39 +57,14 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
 choices[0].message.content
 ```
 
-如果你的 Key 是 DeepSeek，把 `model` 改成 `deepseek-v4-flash` 或 `deepseek-v4-pro`。
-如果你的 Key 是 Grok，把 `model` 改成 `grok-4.1-fast`。
-如果你的 Key 是 Claude、Gemini 或图片，请直接看 [API 测试文档](docs/postman-apifox-api-test.md) 选择对应接口。
-
----
-
-## 目录结构
-
-```text
-sublb-demo/
-├── README.md
-├── docs/
-│   ├── postman-apifox-api-test.md      # API 测试文档，给小白照着跑
-│   ├── api-test-explainer.md           # 概念解释说明
-│   ├── ai-agent-instructions.md        # 给 AI / Agent 的接入提示词
-│   └── archive/                        # 旧文档、历史测试、SDK 示例归档
-├── openai/                             # OpenAI 相关样例/记录
-├── gemini/                             # Gemini 相关样例/说明
-├── grok/                               # Grok 相关样例/记录
-├── anthropic/                          # Claude / Anthropic 相关样例/说明
-└── sublb_grok_openai_gemini_claude_deepseek_API文档.md  # 完整 API Reference
-```
-
 ---
 
 ## 维护原则
 
-- README 只做入口导航，不堆长模型表。
-- 顶层只保留清晰入口：provider 目录、README、docs、完整 API Reference。
-- API 测试文档按 Postman / Apifox 风格组织：环境变量、认证、接口目录、请求体、读取字段、错误排查。
-- 解释说明文档只解释概念，不混入完整 API Reference。
-- AI Agent 文档只给 AI 明确接入边界、固定提示词、接口选择规则和禁止事项。
-- 完整 API Reference 保留给高级用户查字段和边界。
-- 旧文档、历史测试、SDK 示例统一放进 `docs/archive/`，不要堆在仓库根目录。
+- README 只做入口导航。
+- `API_TEST.md` 只写小白能照着跑的 Postman / Apifox / curl 测试步骤。
+- `AI_AGENT.md` 只写给 AI 的接入边界和提示词。
+- `API_REFERENCE.md` 才放完整字段和高级边界。
+- provider 目录只放当前 provider 的简短说明，不堆历史测试文件。
 - 不把真实 API Key、admin key、cookie、token 写进仓库。
 - 未经真实业务接口测试的模型，不写成“可用”。
