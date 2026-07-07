@@ -4,7 +4,7 @@
 
 文档版本：v4.1
 
-本文档按 SubLB 后台真实“分组 Key”写，不按抽象 Provider 写。你拿到的 Key 属于哪个分组，决定你能调用哪个接口、能填哪个模型、按什么方式计费。
+本文档按 SubLB 平台真实“分组 Key”写，不按抽象 Provider 写。你拿到的 Key 属于哪个分组，决定你能调用哪个接口、能填哪个模型、按什么方式计费。
 
 Base URL：
 
@@ -31,7 +31,7 @@ export SUBLB_API_KEY="替换成你的 SubLB API Key"
 
 ### 1.2 先确认你的 Key 属于哪个分组
 
-SubLB 的 Key 不是“全平台万能 Key”。它通常属于一个后台分组，分组决定：
+SubLB 的 Key 不是“全平台万能 Key”。它通常属于一个平台分组，分组决定：
 
 - 能用哪个接口；
 - 能填哪个模型；
@@ -128,78 +128,40 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/models" \
 
 ## 2. Groups and keys
 
-### 2.1 本轮业务接口通过的推荐分组
+### 2.1 推荐分组
 
-下面表格只放本轮真实业务接口 smoke 通过的分组。已去掉 `Old*` 历史分组，也不把“用户勿选/状态探针/自测”分组作为接入推荐。
+下面表格只放新手可以直接选择的公开接入分组。未开放、未确认、仅内部测试用的分组不写进这份对外文档。
 
-| 后台分组 | 平台 | 类型 | 适合做什么 | 推荐接口 | 推荐模型 | 本轮 smoke |
+| 平台分组 | 平台 | 类型 | 适合做什么 | 推荐接口 | 推荐模型 | 测试状态 |
 |---|---|---|---|---|---|---|
-| `spark` | OpenAI | 订阅 | 前台轻量入门档，GPT PRO+GPT plus | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | Chat、Responses 通过 |
-| `start` | OpenAI | 订阅 | 前台稳定入门档，GPT PRO+GPT plus | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | Chat、Responses 通过 |
-| `pro` | OpenAI | 订阅 | 前台进阶生产档，GPT PRO+GPT plus | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | Chat、Responses 通过 |
-| `ultra` | OpenAI | 订阅 | 前台旗舰稳定档，GPT PRO+GPT plus | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | Chat、Responses 通过 |
-| `Standard` | OpenAI | 订阅 / 专属 | 前台 Standard / GPT PRO+GPT plus 主力档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | Chat、Responses 通过 |
-| `GPT basic` | OpenAI | 订阅 / 专属 | 前台 gpt plus 普通入门档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | Chat、Responses 通过 |
-| `codex普通(按量付费)` | OpenAI | 按量 | OpenAI / Codex 按量普通档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | Chat、Responses 通过 |
-| `codex-pro（按量付费）` | OpenAI | 按量 | OpenAI / Codex 按量 Pro 档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`，也可按 `/v1/models` 选择 GPT/Codex 系列 | Chat、Responses 通过 |
+| `spark` | OpenAI | 订阅 | 前台轻量入门档，GPT PRO+GPT plus | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` | Chat、Responses 通过 |
+| `start` | OpenAI | 订阅 | 前台稳定入门档，GPT PRO+GPT plus | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` | Chat、Responses 通过 |
+| `pro` | OpenAI | 订阅 | 前台进阶生产档，GPT PRO+GPT plus | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` | Chat、Responses 通过 |
+| `ultra` | OpenAI | 订阅 | 前台旗舰稳定档，GPT PRO+GPT plus | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` | Chat、Responses 通过 |
+| `Standard` | OpenAI | 订阅 / 专属 | 前台 Standard / GPT PRO+GPT plus 主力档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark`、`gpt-image-2` | Chat、Responses 通过；图片请按图片接口单独测试 |
+| `GPT basic` | OpenAI | 订阅 / 专属 | 前台 gpt plus 普通入门档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` | Chat、Responses 通过 |
+| `codex普通(按量付费)` | OpenAI | 按量 | OpenAI / Codex 按量普通档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` | Chat、Responses 通过 |
+| `codex-pro（按量付费）` | OpenAI | 按量 | OpenAI / Codex 按量 Pro 档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` | Chat、Responses 通过 |
 | `DeepSeek Basic` | OpenAI-compatible | 订阅 / 专属 | DeepSeek 通用接入 | `/v1/chat/completions`、`/v1/responses` | Chat: `deepseek-v4-flash`、`deepseek-v4-pro`；Responses: `deepseek-v4-flash` | Chat 两个模型通过；Responses flash 通过 |
-| `deepseek` | OpenAI-compatible | 按量 | DeepSeek 按量接入 | `/v1/responses` | `deepseek-v4-pro` | Responses pro 通过；Chat 和 flash 本轮超时，不作为推荐写法 |
-| `Grok 文本和图片` | Grok | 按量 | Grok 文本、Grok 生图 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片本轮未测，需按图片接口单独 smoke |
-| `Grok-codex 文图统一月订阅20260430(普通)` | Grok | 订阅 / 专属 | Grok 文图统一普通套餐 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片本轮未测，需按图片接口单独 smoke |
-| `Grok-codex 文图统一月订阅20260430(高级)` | Grok | 订阅 / 专属 | Grok 文图统一高级套餐 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片本轮未测，需按图片接口单独 smoke |
+| `deepseek` | OpenAI-compatible | 按量 | DeepSeek 按量接入 | `/v1/responses` | `deepseek-v4-pro` | Responses pro 通过；建议优先使用 `/v1/responses` |
+| `Grok 文本和图片` | Grok | 按量 | Grok 文本、Grok 生图 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片请按图片接口单独测试 |
+| `Grok-codex 文图统一月订阅20260430(普通)` | Grok | 订阅 / 专属 | Grok 文图统一普通套餐 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片请按图片接口单独测试 |
+| `Grok-codex 文图统一月订阅20260430(高级)` | Grok | 订阅 / 专属 | Grok 文图统一高级套餐 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片请按图片接口单独测试 |
 | `claudecode特价` | Anthropic | 按量 | Claude 原生 Messages、Claude Fable 5 | `/v1/messages`；`/v1/responses` 非流式 JSON | `claude-fable-5`、`claude-haiku-4-5-20251001`、`claude-opus-4-6/4-7/4-8`、`claude-sonnet-4-6` | Messages 非流式 6 个模型通过；`claude-fable-5` Messages stream 通过；Responses 非流式通过 |
 
-### 2.2 后台存在，但本文不作为“可直接用”推荐的分组
+### 2.2 OpenAI 在线模型
 
-| 后台分组 | 原因 |
-|---|---|
-| `Codex-star（内部邀请分组）` | 本轮用分组 Key 调用返回 `SUBSCRIPTION_NOT_FOUND`，不是公开接入示例。 |
-| `Trial1` | 本轮用分组 Key 调用返回 `SUBSCRIPTION_NOT_FOUND`，不写成稳定示例。 |
-| `super` | 本轮月额度超限，业务接口返回 `MONTHLY_LIMIT_EXCEEDED`；补额度并重新 smoke 前，不作为可用示例。 |
-| `start套餐升级` | 本轮没有 active API key，无法业务实测。 |
-| `DeepSeek Flash` | 本轮没有 active API key，无法业务实测。 |
-| `DeepSeek Pro` | 本轮没有 active API key，无法业务实测。 |
-| `DeepSeek 体验周卡` | `/v1/models` 可见，但 chat 业务请求本轮超时；补账号或修路由并重新 smoke 前，不作为可用示例。 |
-| `gemini（文本和图片）` | `/v1/models` 可见，但 generateContent 返回 `503 No available Gemini accounts`；补可用 Gemini 账号前，不作为可用示例。 |
-| `cc特价` | `/v1/messages` 本轮返回上游 502；修复上游访问后需重新 smoke。 |
-| `open-img分组包月` | 本轮未纳入业务 smoke；图片接入请先按 `/v1/images/generations` 或 `/v1/images/edits` 单独验收。 |
-| `codex优质(按量付费)` | 本轮返回 `ACCESS_DENIED`，不作为可用示例。 |
-| `Old*` 系列 | 历史分组，本文不再作为接入示例。 |
-| `用户勿选 / 自测 / 状态探针` 分组 | 内部测试用途，本文不写入对外接入口径。 |
+公开文档只列当前建议新手直接测试的在线模型。不要把候选模型、演示材料里的模型名、未确认模型当成可直接接入模型。
 
----
+| 用途 | 推荐模型 | 常用接口 |
+|---|---|---|
+| 默认文本 / 自动化 / API 测试 | `gpt-5.5` | `/v1/chat/completions`、`/v1/responses` |
+| 稳定文本 | `gpt-5.4` | `/v1/chat/completions`、`/v1/responses` |
+| 轻量文本 | `gpt-5.4-mini` | `/v1/chat/completions`、`/v1/responses` |
+| Codex / 代码任务 | `gpt-5.3-codex-spark` | `/v1/chat/completions`、`/v1/responses` |
+| 图片生成 | `gpt-image-2` | `/v1/images/generations` |
 
-### 2.3 OpenAI 主力订阅档可见模型
-
-`spark`、`start`、`pro`、`ultra`、`Standard` 这批前台 `GPT PRO+GPT plus` 分组，以及 `GPT basic`，本轮 `/v1/models` 可见的是一组 OpenAI-compatible 模型。常用优先级建议：
-
-| 用途 | 推荐优先填 |
-|---|---|
-| 普通文本 / 自动化 / Codex 工作流 | `gpt-5.5` |
-| 更轻量任务 | `gpt-5.4-mini`、`gpt-5-mini`、`gpt-5.1-codex-mini` |
-| Codex / 代码任务 | `gpt-5.3-codex`、`gpt-5.2-codex`、`gpt-5.1-codex`、`gpt-5-codex` |
-| 图片 | `gpt-image-2`，但仍要看你的分组是否允许图片接口 |
-| 旧客户端兼容 | `gpt-4o`、`gpt-4.1`、`o3`、`o4-mini` 等 |
-
-本轮在 `Standard` 分组看到 61 个模型，包括：
-
-```text
-chatgpt-4o-latest, codex-auto-review,
-gpt-4, gpt-4.1, gpt-4.1-mini, gpt-4.1-nano, gpt-4.5-preview,
-gpt-4o, gpt-4o-mini,
-gpt-5, gpt-5-chat, gpt-5-codex, gpt-5-mini, gpt-5-nano, gpt-5-pro,
-gpt-5.1, gpt-5.1-chat-latest, gpt-5.1-codex, gpt-5.1-codex-max, gpt-5.1-codex-mini,
-gpt-5.2, gpt-5.2-chat-latest, gpt-5.2-codex, gpt-5.2-pro,
-gpt-5.3, gpt-5.3-codex, gpt-5.3-codex-spark,
-gpt-5.4, gpt-5.4-mini, gpt-5.4-nano,
-gpt-5.5,
-gpt-image-2,
-o1, o1-mini, o1-preview, o1-pro,
-o3, o3-mini, o3-pro,
-o4-mini
-```
-
-注意：模型可见不等于所有接口都可用。例如图片模型还要走图片接口，并且要看该分组是否允许图片能力。
+注意：`/v1/models` 只能说明模型名可被发现；真正能不能用，以对应业务接口返回成功为准。
 
 ---
 
@@ -261,16 +223,16 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
 
 | 你手上的分组 Key | 推荐模型 |
 |---|---|
-| `spark` | `gpt-5.5`；也可按 `/v1/models` 选择 GPT/Codex 系列 |
-| `start` | `gpt-5.5`；也可按 `/v1/models` 选择 GPT/Codex 系列 |
-| `pro` | `gpt-5.5`；也可按 `/v1/models` 选择 GPT/Codex 系列 |
-| `ultra` | `gpt-5.5`；也可按 `/v1/models` 选择 GPT/Codex 系列 |
-| `Standard` | `gpt-5.5`；也可按 `/v1/models` 选择 GPT/Codex 系列 |
-| `GPT basic` | `gpt-5.5`；也可按 `/v1/models` 选择 GPT/Codex 系列 |
-| `codex普通(按量付费)` | `gpt-5.5`；也可按 `/v1/models` 选择 GPT/Codex 系列 |
-| `codex-pro（按量付费）` | `gpt-5.5`；也可按 `/v1/models` 选择 GPT/Codex 系列 |
+| `spark` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` |
+| `start` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` |
+| `pro` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` |
+| `ultra` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` |
+| `Standard` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` |
+| `GPT basic` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` |
+| `codex普通(按量付费)` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` |
+| `codex-pro（按量付费）` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` |
 | `DeepSeek Basic` | `deepseek-v4-flash`、`deepseek-v4-pro` |
-| `deepseek` | 本轮 Chat Completions 超时；如使用该分组，优先走 `/v1/responses` + `deepseek-v4-pro` |
+| `deepseek` | 如使用该分组，优先走 `/v1/responses` + `deepseek-v4-pro` |
 | `Grok 文本和图片` | `grok-4.1-fast` |
 | `Grok-codex 文图统一月订阅20260430(普通)` | `grok-4.1-fast` |
 | `Grok-codex 文图统一月订阅20260430(高级)` | `grok-4.1-fast` |
@@ -329,14 +291,13 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/responses" \
 
 读取字段：优先读 `output_text`；没有时读 `output[].content[].text`。
 
-### 本轮 DeepSeek Responses 实测
+### DeepSeek Responses 推荐写法
 
-| 分组 | 模型 | 结果 |
+| 分组 | 推荐模型 | 建议 |
 |---|---|---|
-| `DeepSeek Basic` | `deepseek-v4-flash` | 200，通过 |
-| `DeepSeek Basic` | `deepseek-v4-pro` | 本轮超时，建议优先用 Chat Completions |
-| `deepseek` | `deepseek-v4-pro` | 200，通过 |
-| `deepseek` | `deepseek-v4-flash` | 本轮超时 |
+| `DeepSeek Basic` | `deepseek-v4-flash` | 新手优先使用；Chat Completions 和 Responses 都可测试 |
+| `DeepSeek Basic` | `deepseek-v4-pro` | 适合更强推理任务；如果响应慢，先降级到 flash |
+| `deepseek` | `deepseek-v4-pro` | 建议优先走 `/v1/responses` |
 
 ---
 
@@ -344,7 +305,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/responses" \
 
 ### 5.1 Create image
 
-注意：本轮 smoke 重点覆盖文本、Responses、Claude Messages 和 Gemini generateContent；图片接口没有纳入本轮统一 smoke。图片分组接入前必须用下面的最小请求单独验收。
+图片接口和文本接口是两条能力线。接入图片时，请直接用下面的最小请求测试你手上的 Key 是否支持图片。
 
 ```http
 POST /v1/images/generations
@@ -441,11 +402,11 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
 
 读取字段：`content[].text`。
 
-本轮实测：`claudecode特价` 重点模型均通过 Anthropic 原生 `/v1/messages` 非流式业务验收；`claude-fable-5` 另通过 `/v1/messages` 流式和 `/v1/responses` 非流式 JSON 验收。`cc特价` 的 `/v1/messages` 返回上游 502，暂不作为 Messages 稳定示例。
+Claude 接入建议优先使用 Anthropic 原生 `/v1/messages`。如果你只想先跑通测试，优先使用下面的最小请求示例。
 
 ### 6.1 Claude Fable 5 与 Claude 4.x 模型
 
-本轮 Claude 口径以 Anthropic 原生 `/v1/messages` 为主，不把 `/v1/chat/completions` 作为默认 Claude 接入口径。
+Claude 接入口径以 Anthropic 原生 `/v1/messages` 为主，不把 `/v1/chat/completions` 作为默认 Claude 接入口径。
 
 | 模型 | `/v1/messages` 非流式 | 备注 |
 |---|---|---|
@@ -458,11 +419,11 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/messages" \
 
 接口边界：
 
-- `/v1/messages`：支持非流式；`claude-fable-5` 流式实测 200，返回 `message_start`、`content_block_delta`、`message_stop` 等标准 SSE 事件。
-- `/v1/responses`：`claude-fable-5` 支持非流式 JSON，实测 200；`status=incomplete` 可能只是 `max_output_tokens` 太小。
-- `/v1/responses` + `stream:true`：本轮未通过，返回上游认证错误，不建议作为默认写法。
-- `/v1/complete`：本轮 404，不支持。
-- `/v1/response`：本轮 404，不支持。
+- `/v1/messages`：支持非流式；`claude-fable-5` 流式返回 `message_start`、`content_block_delta`、`message_stop` 等标准 SSE 事件。
+- `/v1/responses`：`claude-fable-5` 支持非流式 JSON；`status=incomplete` 可能只是 `max_output_tokens` 太小。
+- `/v1/responses` + `stream:true`：不建议作为新手默认写法。
+- `/v1/complete`：不作为新手推荐接口。
+- `/v1/response`：不作为新手推荐接口。
 - 网络提示：如本机代理污染，可用 `--noproxy '*'`；如网络环境必须代理，先确认本机代理链路可用。
 
 ---
@@ -494,7 +455,7 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1beta/models/gemini-3-flash-preview:generat
 
 图片读取：`candidates[0].content.parts[].inlineData.data`。
 
-本轮实测：`gemini（文本和图片）` 调 `gemini-3-flash-preview` 返回 `503 No available Gemini accounts`。所以本文保留接口格式，但不把 Gemini 写成当前已通过的可用分组。
+Gemini 使用原生 `generateContent` 格式；如果请求失败，先确认你的 Key 是否开通 Gemini 分组，以及该分组当前是否有可用账号。
 
 ---
 
@@ -503,9 +464,9 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1beta/models/gemini-3-flash-preview:generat
 | 错误 | 常见原因 | 处理方式 |
 |---|---|---|
 | `401` / unauthorized | Key 错、Header 写错 | 检查 `Authorization: Bearer` 或 Gemini 的 `x-goog-api-key` |
-| `SUBSCRIPTION_NOT_FOUND` | 订阅分组没有当前有效订阅 | 换有有效订阅的 Key，或让后台给该用户补齐订阅 |
+| `SUBSCRIPTION_NOT_FOUND` | 订阅分组没有当前有效订阅 | 换有有效订阅的 Key，或让平台管理员确认订阅状态 |
 | `No active subscription found for this group` | Key 属于订阅分组，但没有 active subscription | 不要只看 `/v1/models`，要做业务接口实测 |
-| `No available Gemini accounts` | Gemini 分组暂无可用账号 | 等后台补账号或换分组 |
+| `No available Gemini accounts` | Gemini 分组暂无可用账号 | 等平台补账号或换分组 |
 | `Upstream access forbidden` | 访问被拒绝 | 联系管理员检查该分组权限 |
 | 请求超时 | 上游慢、账号不可用、模型路由异常 | 先换同组另一个模型；仍失败再联系管理员 |
 | 模型可见但业务失败 | `/v1/models` 通过不等于业务接口可用 | 以 `/v1/chat/completions`、`/v1/responses`、`/v1/messages` 等业务接口为准 |
@@ -540,34 +501,3 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
 验收标准：HTTP 200，且 `choices[0].message.content` 包含 `SUBLB_OK`。
 
 ---
-
-## 10. 本轮真实测试摘要
-
-测试环境：`https://sub-lb.tap365.org`，使用每个分组下的 active API key 做业务接口 smoke，未在文档中暴露完整 Key。
-
-| 分组 | `/v1/models` | 业务接口结果 |
-|---|---:|---|
-| `spark` | 200 | `gpt-5.5` chat 200，通过；responses 200，通过 |
-| `start` | 200 | `gpt-5.5` chat 200，通过；responses 200，通过 |
-| `pro` | 200 | `gpt-5.5` chat 200，通过；responses 200，通过 |
-| `super` | 429 | 月额度超限，本轮业务接口未通过；已移出可用推荐表 |
-| `ultra` | 200 | `gpt-5.5` chat 200，通过；responses 200，通过 |
-| `Standard` | 200 | `gpt-5.5` chat 200，通过；responses 200，通过 |
-| `GPT basic` | 200 | `gpt-5.5` chat 200，通过；responses 200，通过 |
-| `codex普通(按量付费)` | 200 | `gpt-5.5` chat 200，通过；responses 200，通过 |
-| `codex-pro（按量付费）` | 200 | `gpt-5.5` chat 200，通过；responses 200，通过 |
-| `codex优质(按量付费)` | 403 | Access denied，本轮不作为可用示例 |
-| `DeepSeek Basic` | 200 | `deepseek-v4-flash` chat 200，通过；`deepseek-v4-pro` chat 200，通过；`deepseek-v4-flash` responses 200，通过 |
-| `deepseek` | 200 | `deepseek-v4-pro` responses 200，通过；其余本轮超时 |
-| `Grok 文本和图片` | 200 | `grok-4.1-fast` chat 200，通过 |
-| `Grok-codex 文图统一月订阅20260430(普通)` | 200 | `grok-4.1-fast` chat 200，通过 |
-| `Grok-codex 文图统一月订阅20260430(高级)` | 200 | `grok-4.1-fast` chat 200，通过 |
-| `claudecode特价` | 200 | 6 个重点 Claude 模型 `/v1/messages` 非流式 200，返回 `pong`；`claude-fable-5` `/v1/messages` stream 200；`claude-fable-5` `/v1/responses` 非流式 200；`/v1/complete` 和 `/v1/response` 404 |
-| `Codex-star（内部邀请分组）` | 403 | `SUBSCRIPTION_NOT_FOUND` |
-| `Trial1` | 403 | `SUBSCRIPTION_NOT_FOUND` |
-| `start套餐升级` | 未测 | 本轮无 active API key |
-| `DeepSeek Flash` | 未测 | 本轮无 active API key |
-| `DeepSeek Pro` | 未测 | 本轮无 active API key |
-| `DeepSeek 体验周卡` | 200 | chat 本轮超时 |
-| `gemini（文本和图片）` | 200 | generateContent 503，无可用 Gemini 账号 |
-| `cc特价` | 200 | `/v1/messages` 上游 502 |
