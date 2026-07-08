@@ -1,20 +1,257 @@
-# Grok
+# Grok 视频接入
 
-Grok 相关接入口径。
+这份文档只讲一件事：**怎么把 Grok 视频模型接到我们自己的平台里，并且别把价格和能力卖错。**
 
-小白先看根目录：
+## 1. 先说结论
 
-1. `README.md`
-2. `API_TEST.md`
-3. `AI_AGENT.md`
-4. `API_REFERENCE.md`
+当前这条链路里，建议优先接这 3 个模型：
+
+| 模型 | 用途 | 建议对外口径 |
+|---|---|---|
+| `grok-imagine-image` | 生图 | 稳定可接 |
+| `grok-imagine-image-quality` | 高质量生图 | 稳定可接 |
+| `grok-image-video` | 图生视频 / 文生视频 | **先按 4 秒卖更稳** |
+| `grok-video-1.5` | 单图生视频 | 只适合单参考图，15 秒能力不要先吹满 |
+
+注意：`GET /v1/models` 只能说明模型可见，**不等于对应业务接口一定稳定可用**。
+
+---
+
+## 2. 价格口径
+
+### 2.1 官方成本口径（xAI 官方，2026-07-08 核对）
+
+`grok-video-1.5` 对应官方 `grok-imagine-video-1.5`，是**按秒 + 输入图**计费：
+
+- 输入图：`$0.01 / 张`
+- 480p：`$0.08 / 秒`
+- 720p：`$0.14 / 秒`
+- 1080p：`$0.25 / 秒`
+
+按 15 秒估算：
+
+| 分辨率 | 官方成本（USD） | 约合人民币* |
+|---|---:|---:|
+| 480p | `$1.21 / 条` | `约 ¥8.7 / 条` |
+| 720p | `$2.11 / 条` | `约 ¥15.1 / 条` |
+| 1080p | `$3.76 / 条` | `约 ¥27.0 / 条` |
+
+`grok-image-video` 更像通用视频能力，按前面评估口径可以先按下面理解：
+
+| 分辨率 | 15 秒官方输出成本（USD） | 约合人民币* |
+|---|---:|---:|
+| 480p | `$0.75 / 条` | `约 ¥5.4 / 条` |
+| 720p | `$1.05 / 条` | `约 ¥7.5 / 条` |
+
+\* 汇率按 `$1 ≈ ¥7.17` 粗算，实际会波动。
+
+### 2.2 对外卖价建议
+
+如果你卖的是 **Grok 视频成品**，别按模型名卖，按**规格**卖：
+
+| 规格 | 建议零售价 |
+|---|---:|
+| 4 秒 / 480p | `¥5.9` |
+| 8 秒 / 480p | `¥9.9` |
+| 15 秒 / 480p | `¥16.9` |
+| 4 秒 / 720p | `¥7.9` |
+| 8 秒 / 720p | `¥13.9` |
+| 15 秒 / 720p | `¥23.9` |
+
+朋友价通常比零售价少 `¥1 ~ ¥2`；批发价再按量谈。
+
+---
+
+## 3. 已实测结果
+
+基于 `https://api.119337.xyz` 的实测，当前可以直接记住：
+
+| 模型 | 实测结果 | 风险提醒 |
+|---|---|---|
+| `grok-imagine-image` | 真出图成功 | 可接 |
+| `grok-imagine-image-quality` | 真出图成功 | 可接 |
+| `grok-image-video` | 真出视频成功 | **先按 4 秒卖** |
+| `grok-video-1.5` | 真能出视频 | 请求 15 秒时，实际返回 4 秒过，参数兑现不稳定 |
+
+所以对外不要先写“稳定 15 秒”，先写成：
+
+- Grok 图生视频
+- 4 秒起
+- 480p / 720p 可选
+- 单图参考更稳
+
+---
+
+## 4. 接口基础信息
+
+Base URL:
+
+```text
+https://api.119337.xyz
+```
+
+认证方式：
+
+```http
+Authorization: Bearer <YOUR_API_KEY>
+Content-Type: application/json
+```
 
 常用接口：
 
-| 能力 | 接口 | 首测模型 |
-|---|---|---|
-| 文本对话 | `POST /v1/chat/completions` | `grok-4.1-fast` |
-| Responses | `POST /v1/responses` | `grok-4.1-fast` |
-| 图片生成 | `POST /v1/images/generations` | `grok-imagine-1.0` |
+| 能力 | 接口 |
+|---|---|
+| 模型列表 | `GET /v1/models` |
+| 图片生成 | `POST /v1/images/generations` |
+| 创建视频任务 | `POST /v1/video/generations` |
+| 查询视频任务 | `GET /v1/video/generations/{task_id}` |
 
-`GET /v1/models` 只能说明模型可见，不等于业务接口一定可用。
+视频生成是**异步任务**：先拿 `task_id`，再轮询结果。
+
+---
+
+## 5. 视频对接方式
+
+### 5.1 创建任务
+
+```bash
+curl -X POST "https://api.119337.xyz/v1/video/generations" \
+  -H "Authorization: Bearer <YOUR_API_KEY>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-image-video",
+    "prompt": "A cinematic 9:16 video of a cat running through warm sunlight.",
+    "seconds": 4,
+    "aspect_ratio": "9:16",
+    "resolution": "720p"
+  }'
+```
+
+### 5.2 单图生视频
+
+```bash
+curl -X POST "https://api.119337.xyz/v1/video/generations" \
+  -H "Authorization: Bearer <YOUR_API_KEY>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "grok-video-1.5",
+    "prompt": "Use the reference image as the main subject and create a smooth cinematic motion.",
+    "seconds": 4,
+    "aspect_ratio": "16:9",
+    "resolution": "480p",
+    "image_urls": [
+      "https://example.com/reference.png"
+    ]
+  }'
+```
+
+### 5.3 查询任务
+
+```bash
+curl -X GET "https://api.119337.xyz/v1/video/generations/{task_id}" \
+  -H "Authorization: Bearer <YOUR_API_KEY>"
+```
+
+成功时重点看：
+
+- `data.status == "SUCCESS"`
+- `data.result_url` 非空
+
+不要只看 `progress: "100%"`，因为**失败任务也可能显示 100%**。
+
+---
+
+## 6. 对接 demo（Node / fetch）
+
+```js
+const BASE_URL = 'https://api.119337.xyz'
+const API_KEY = process.env.NEWAPI_API_KEY
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function createGrokVideo() {
+  const createResp = await fetch(`${BASE_URL}/v1/video/generations`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'grok-image-video',
+      prompt: 'A cinematic 9:16 video of a cat running through warm sunlight.',
+      seconds: 4,
+      aspect_ratio: '9:16',
+      resolution: '720p',
+    }),
+  })
+
+  const created = await createResp.json()
+  if (!createResp.ok) throw new Error(JSON.stringify(created))
+
+  const taskId = created.task_id || created.id
+  if (!taskId) throw new Error('missing task_id')
+
+  for (let i = 0; i < 60; i += 1) {
+    await sleep(5000)
+
+    const pollResp = await fetch(`${BASE_URL}/v1/video/generations/${taskId}`, {
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+      },
+    })
+    const result = await pollResp.json()
+    if (!pollResp.ok) throw new Error(JSON.stringify(result))
+
+    const task = result.data
+    if (task?.status === 'SUCCESS' && task.result_url) {
+      return task.result_url
+    }
+    if (task?.status === 'FAILURE') {
+      throw new Error(task.fail_reason || JSON.stringify(result))
+    }
+  }
+
+  throw new Error(`timeout: ${taskId}`)
+}
+```
+
+---
+
+## 7. 接入注意事项
+
+1. **不要把视频能力写成同步接口。** 这是异步任务。
+2. **不要只依赖 `/v1/models` 判定可用性。** 必须真调业务接口。
+3. **不要先承诺稳定 15 秒。** 当前更稳的卖法是先按 4 秒卖。
+4. `grok-video-1.5` **只能单图参考**，不支持纯文生，也不支持多图。
+5. `grok-image-video` 多参考图最多 7 张，且多图最长 10 秒。
+6. `result_url` 是临时直链，建议任务成功后立即下载落库。
+7. 图片必须是公网 HTTPS 直链，不能依赖登录、Cookie、防盗链。
+8. 平台展示价和官方真实成本不是一回事；如果后台看到低得离谱的价格，先核实是不是渠道补贴价或按次价。
+
+---
+
+## 8. 平台接入建议
+
+如果要接到我们自己的平台，建议前台先只开放这几个规格：
+
+- 4 秒 / 480p
+- 8 秒 / 480p
+- 4 秒 / 720p
+
+这样有三个好处：
+
+1. 成本更稳；
+2. 售价更容易解释；
+3. 不容易被“你不是说 15 秒吗”这种售后追着打。
+
+等真实跑量稳定后，再考虑逐步开放 10 秒、12 秒、15 秒。
+
+---
+
+## 9. 外部来源
+
+- xAI 官方定价：<https://docs.x.ai/developers/pricing>
+- xAI 视频生成能力：<https://docs.x.ai/developers/model-capabilities/video/generation>
+- xAI `grok-imagine-video-1.5`：<https://docs.x.ai/developers/models/grok-imagine-video-1.5-preview>
