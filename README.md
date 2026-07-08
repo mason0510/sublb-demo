@@ -14,6 +14,29 @@ SubLB API 的公开 Demo 仓库。
 
 ---
 
+## provider 入口
+
+### 通用入口
+
+- `API_TEST.md`：先跑通最小请求
+- `AI_AGENT.md`：给 AI 的接入提示
+- `API_REFERENCE.md`：完整字段、模型边界、错误码
+
+### provider / 能力目录
+
+- `openai/README.md`：OpenAI / GPT / Codex 接入口径
+- `gemini/README.md`：Gemini 接入口径
+- `anthropic/README.md`：Claude / Anthropic 接入口径
+- `grok/README.md`：Grok 图片与视频接入、价格口径、异步轮询、注意事项
+- `seedance/README.md`：Seedance 视频接入、按次/按秒计费区分、对接 demo、注意事项
+
+一句话结论：
+
+- **Grok**：图像模型可接，视频模型已跑通，但当前更稳的卖法是**先按 4 秒卖**，不要先吹满 15 秒。
+- **Seedance**：先锁清楚后台到底是**按次价还是按秒价**，别把 `0.24 / 条` 误算成 `0.24 / 秒`。
+
+---
+
 ## 根目录只保留这些
 
 ```text
@@ -25,6 +48,7 @@ sublb-demo/
 ├── openai/            # OpenAI / GPT / Codex 说明
 ├── gemini/            # Gemini 说明
 ├── grok/              # Grok 说明
+├── seedance/          # Seedance 视频说明
 └── anthropic/         # Claude / Anthropic 说明
 ```
 
