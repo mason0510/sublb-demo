@@ -4,7 +4,7 @@
 #   hurl --test --variables-file .env.hurl responses-sse.hurl
 #
 # .env.hurl must define only:
-#   sublb_base_url=https://sub-lb.tap365.org
+#   sublb_base_url=https://YOUR_SUBLB_DOMAIN
 #   sublb_api_key=YOUR_SUBLB_API_KEY
 #
 # Keep .env.hurl local. Never commit a real API key.

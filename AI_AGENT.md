@@ -23,7 +23,7 @@
 5. 先做最小 smoke test，再接入业务逻辑。
 
 固定信息：
-- Base URL: https://sub-lb.tap365.org
+- Base URL: https://YOUR_SUBLB_DOMAIN
 - OpenAI-compatible 认证：Authorization: Bearer <SUBLB_API_KEY>
 - Gemini 原生接口认证：x-goog-api-key: <SUBLB_API_KEY>
 
@@ -42,7 +42,7 @@
 
 | 项目 | 值 |
 |---|---|
-| Base URL | `https://sub-lb.tap365.org` |
+| Base URL | `https://YOUR_SUBLB_DOMAIN` |
 | 推荐环境变量 | `SUBLB_BASE_URL`、`SUBLB_API_KEY` |
 | OpenAI-compatible 认证头 | `Authorization: Bearer <SUBLB_API_KEY>` |
 | Gemini 原生认证头 | `x-goog-api-key: <SUBLB_API_KEY>` |
@@ -97,7 +97,7 @@
 ## 5. 最小文本 smoke test
 
 ```bash
-export SUBLB_BASE_URL="https://sub-lb.tap365.org"
+export SUBLB_BASE_URL="https://YOUR_SUBLB_DOMAIN"
 export SUBLB_API_KEY="替换成你的 SubLB API Key"
 
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
@@ -185,7 +185,7 @@ AI 修改完项目后，建议按这个格式回复用户：
 - <file 2>
 
 本次调用：
-- Base URL: https://sub-lb.tap365.org
+- Base URL: https://YOUR_SUBLB_DOMAIN
 - Path: <接口路径>
 - Model: <模型名>
 - 结果字段: <读取字段>

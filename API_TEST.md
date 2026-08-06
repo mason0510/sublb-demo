@@ -10,7 +10,7 @@
 
 | 概念 | 人话解释 | 最容易错的地方 |
 |---|---|---|
-| Base URL | 所有接口共同的前缀，例如 `https://sub-lb.tap365.org` | 多写或漏写 `/v1` |
+| Base URL | 所有接口共同的前缀，例如 `https://YOUR_SUBLB_DOMAIN` | 多写或漏写 `/v1` |
 | API Key | 你的接口通行证，决定能用哪些模型和能力 | 以为一个 Key 能调用所有平台 |
 | Model | 请求体里的 `model` 字段 | `/v1/models` 看得到，不代表业务接口一定可用 |
 | OpenAI-compatible | 兼容 OpenAI 形状的接口 | 把 Claude / Gemini 全塞进同一个接口 |
@@ -37,13 +37,13 @@
 
 | 变量名 | 示例值 | 说明 |
 |---|---|---|
-| `base_url` | `https://sub-lb.tap365.org` | SubLB API 地址 |
+| `base_url` | `https://YOUR_SUBLB_DOMAIN` | SubLB API 地址 |
 | `api_key` | `你的 SubLB API Key` | 不要写进公开文档、截图、issue |
 
 在 curl 里可以这样设置：
 
 ```bash
-export SUBLB_BASE_URL="https://sub-lb.tap365.org"
+export SUBLB_BASE_URL="https://YOUR_SUBLB_DOMAIN"
 export SUBLB_API_KEY="替换成你的 SubLB API Key"
 ```
 

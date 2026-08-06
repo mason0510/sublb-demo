@@ -6,7 +6,7 @@
 
 - `as-sd2.0-fast`
 - `video-ds-2.0`
-- Base URL: `https://zz1cc.cc.cd`
+- Base URL: `https://YOUR_SUBLB_DOMAIN`
 
 ---
 
@@ -72,7 +72,7 @@
 Base URL:
 
 ```text
-https://zz1cc.cc.cd
+https://YOUR_SUBLB_DOMAIN
 ```
 
 认证方式：
@@ -97,7 +97,7 @@ Content-Type: application/json
 ### 4.1 创建任务
 
 ```bash
-curl https://zz1cc.cc.cd/v1/videos \
+curl https://YOUR_SUBLB_DOMAIN/v1/videos \
   -H "Authorization: Bearer $NEW_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -111,14 +111,14 @@ curl https://zz1cc.cc.cd/v1/videos \
 ### 4.2 查询任务状态
 
 ```bash
-curl https://zz1cc.cc.cd/v1/videos/{task_id} \
+curl https://YOUR_SUBLB_DOMAIN/v1/videos/{task_id} \
   -H "Authorization: Bearer $NEW_API_KEY"
 ```
 
 ### 4.3 下载成片
 
 ```bash
-curl -L https://zz1cc.cc.cd/v1/videos/{task_id}/content \
+curl -L https://YOUR_SUBLB_DOMAIN/v1/videos/{task_id}/content \
   -H "Authorization: Bearer $NEW_API_KEY" \
   -o result.mp4
 ```
@@ -128,7 +128,7 @@ curl -L https://zz1cc.cc.cd/v1/videos/{task_id}/content \
 ## 5. 对接 demo（Node / fetch）
 
 ```js
-const BASE_URL = 'https://zz1cc.cc.cd'
+const BASE_URL = 'https://YOUR_SUBLB_DOMAIN'
 const API_KEY = process.env.NEW_API_KEY
 
 function sleep(ms) {

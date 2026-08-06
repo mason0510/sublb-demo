@@ -31,7 +31,7 @@ OpenAI / GPT / Codex 相关接入口径。
 在当前目录创建 `.env.hurl`（该文件已被 `.gitignore` 忽略）：
 
 ```ini
-sublb_base_url=https://sub-lb.tap365.org
+sublb_base_url=https://YOUR_SUBLB_DOMAIN
 sublb_api_key=YOUR_SUBLB_API_KEY
 sublb_model=gpt-5.6-sol
 ```
@@ -41,7 +41,7 @@ Spark/OpenAI 分组可先使用 `gpt-5.6-sol`。
 
 ### 2. 执行测试
 
-需要先安装 [Hurl](https://hurl.dev/)，然后运行：
+需要先安装 [Hurl](https://YOUR_SUBLB_DOMAIN/)，然后运行：
 
 ```bash
 cd openai

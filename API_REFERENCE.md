@@ -9,7 +9,7 @@
 Base URL：
 
 ```text
-https://sub-lb.tap365.org
+https://YOUR_SUBLB_DOMAIN
 ```
 
 ---
@@ -23,7 +23,7 @@ https://sub-lb.tap365.org
 ### 1.1 先准备环境变量
 
 ```bash
-export SUBLB_BASE_URL="https://sub-lb.tap365.org"
+export SUBLB_BASE_URL="https://YOUR_SUBLB_DOMAIN"
 export SUBLB_API_KEY="替换成你的 SubLB API Key"
 ```
 

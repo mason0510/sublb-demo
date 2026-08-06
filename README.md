@@ -59,7 +59,7 @@ sublb-demo/
 ## 30 秒跑通一个文本请求
 
 ```bash
-export SUBLB_BASE_URL="https://sub-lb.tap365.org"
+export SUBLB_BASE_URL="https://YOUR_SUBLB_DOMAIN"
 export SUBLB_API_KEY="替换成你的 SubLB API Key"
 
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/chat/completions" \
