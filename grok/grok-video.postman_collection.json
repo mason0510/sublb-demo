@@ -1,0 +1,64 @@
+{
+  "info": {
+    "name": "Grok Video API"
+  },
+  "variable": [
+    { "key": "base_url", "value": "https://YOUR_SUBLB_DOMAIN" },
+    { "key": "api_key", "value": "" },
+    { "key": "task_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "文生视频",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"model\": \"grok-video\",\n  \"prompt\": \"一把椅子放在暖色灯光下，镜头缓慢环绕\",\n  \"duration\": 3,\n  \"aspect_ratio\": \"16:9\",\n  \"resolution\": \"480p\"\n}" },
+        "url": "{{base_url}}/v1/videos/generations"
+      }
+    },
+    {
+      "name": "单图生视频",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"model\": \"grok-video-1.5\",\n  \"prompt\": \"镜头缓慢靠近，灯光和阴影自然变化\",\n  \"image_url\": \"https://YOUR_SUBLB_DOMAIN/input.png\",\n  \"duration\": 3,\n  \"aspect_ratio\": \"16:9\",\n  \"resolution\": \"480p\"\n}" },
+        "url": "{{base_url}}/v1/videos/generations"
+      }
+    },
+    {
+      "name": "多参考图视频（最多 7 张）",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"model\": \"grok-image-video\",\n  \"prompt\": \"根据多张参考图生成流畅的高端产品展示视频\",\n  \"seconds\": 15,\n  \"aspect_ratio\": \"16:9\",\n  \"resolution\": \"720p\",\n  \"reference_images\": [\n    { \"url\": \"https://YOUR_SUBLB_DOMAIN/reference-1.png\" },\n    { \"url\": \"https://YOUR_SUBLB_DOMAIN/reference-2.png\" }\n  ]\n}" },
+        "url": "{{base_url}}/v1/videos/generations"
+      }
+    },
+    {
+      "name": "查询视频任务",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{api_key}}" }],
+        "url": "{{base_url}}/v1/videos/{{task_id}}"
+      }
+    },
+    {
+      "name": "下载视频内容",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{api_key}}" }],
+        "url": "{{base_url}}/v1/videos/{{task_id}}/content"
+      }
+    }
+  ]
+}
