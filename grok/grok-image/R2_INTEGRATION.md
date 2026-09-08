@@ -55,7 +55,7 @@ https://pub-87cd59069cf0444aad048f7bddec99af.r2.dev/images/grok/...
 ### 2.1 网关地址
 
 ```text
-https://sub-lb.tap365.org
+https://chainfuel.tap365.org
 ```
 
 ### 2.2 图片生成
@@ -135,7 +135,7 @@ grok-imagine-image-quality
 ### 3.3 请求示例
 
 ```bash
-curl -X POST 'https://sub-lb.tap365.org/v1/images/generations' \
+curl -X POST 'https://chainfuel.tap365.org/v1/images/generations' \
   -H 'Authorization: Bearer YOUR_API_KEY' \
   -H 'Content-Type: application/json' \
   --data-binary '{
@@ -170,7 +170,7 @@ curl -X POST 'https://sub-lb.tap365.org/v1/images/generations' \
 ### 4.2 请求示例
 
 ```bash
-curl -X POST 'https://sub-lb.tap365.org/v1/images/edits' \
+curl -X POST 'https://chainfuel.tap365.org/v1/images/edits' \
   -H 'Authorization: Bearer YOUR_API_KEY' \
   -F 'model=grok-imagine-image' \
   -F 'prompt=将蓝色圆形改成红色方形，保持背景和构图不变' \
