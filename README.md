@@ -28,7 +28,7 @@ SubLB API 的公开 Demo 仓库。
 - `gemini/README.md`：Gemini 接入口径
 - `anthropic/README.md`：Claude / Anthropic 接入口径
 - `grok/README.md`：Grok 图片与视频接入、价格口径、异步轮询、注意事项
-- `grok-image/README.md`：Grok 图片生成、图片编辑与 Cloudflare R2 结果转存
+- `grok/grok-image/README.md`：Grok 图片生成、图片编辑与 Cloudflare R2 结果转存
 - `seedance/README.md`：Seedance 视频接入、按次/按秒计费区分、对接 demo、注意事项
 
 一句话结论：
