@@ -2,6 +2,8 @@
 
 面向 API 接入用户的 OpenAI-compatible 图片接口文档。
 
+Grok-Image 按量套餐直连 Grok 图片 API，支持图片生成和图片编辑。生图和编辑都使用 `grok-imagine-image-quality`。本套餐不含 Grok 文本对话。
+
 ## 1. 基础信息
 
 **Base URL**
@@ -20,13 +22,14 @@ Authorization: Bearer YOUR_API_KEY
 
 ## 2. 支持模型
 
-| 模型 | 用途 |
-|---|---|
-| `grok-imagine-image` | 通用图片生成与编辑 |
-| `grok-imagine-image-2.0` | 新版图片生成与编辑 |
-| `grok-imagine-image-quality` | 高质量图片生成与编辑 |
+| 模型 | 接口 | 用途 |
+|---|---|---|
+| `grok-imagine-image-quality` | `POST /v1/images/generations` | 图片生成 |
+| `grok-imagine-image-quality` | `POST /v1/images/edits` | 图片编辑 |
 
-模型是否可用还取决于你的账号、套餐和当前分组权限。
+请把 `grok-imagine-image-quality` 当作当前默认模型。`grok-imagine-1.0`、`grok-imagine-1.0-edit`、`grok-imagine-image` 即使能在 `/v1/models` 里看到，也不要当作稳定默认值。
+
+模型是否可用还取决于你的账号、套餐和当前分组权限。真正能不能用，以对应业务接口返回 `data[0].url` 为准。
 
 ## 3. 支持尺寸
 
@@ -65,7 +68,7 @@ curl -X POST 'https://chainfuel.tap365.org/v1/images/generations' \
   -H 'Authorization: Bearer YOUR_API_KEY' \
   -H 'Content-Type: application/json' \
   --data-binary '{
-    "model": "grok-imagine-image",
+    "model": "grok-imagine-image-quality",
     "prompt": "一只小橘猫坐在蓝色机器人旁边，柔和光线，无文字",
     "n": 1,
     "size": "1024x1024"
@@ -121,7 +124,7 @@ Authorization: Bearer YOUR_API_KEY
 ```bash
 curl -X POST 'https://chainfuel.tap365.org/v1/images/edits' \
   -H 'Authorization: Bearer YOUR_API_KEY' \
-  -F 'model=grok-imagine-image' \
+  -F 'model=grok-imagine-image-quality' \
   -F 'prompt=将蓝色圆形改成红色方形，保持背景和构图不变' \
   -F 'n=1' \
   -F 'size=1024x1024' \
@@ -160,7 +163,7 @@ const response = await fetch(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'grok-imagine-image',
+      model: 'grok-imagine-image-quality',
       prompt: '一只白色小狗，干净背景，无文字',
       n: 1,
       size: '1024x1024',
@@ -188,7 +191,7 @@ with open("input.png", "rb") as image_file:
         "https://chainfuel.tap365.org/v1/images/edits",
         headers={"Authorization": f"Bearer {os.environ['SUBLB_API_KEY']}"},
         data={
-            "model": "grok-imagine-image",
+            "model": "grok-imagine-image-quality",
             "prompt": "把蓝色圆形改成红色方形，保持背景不变",
             "n": "1",
             "size": "1024x1024",
@@ -244,7 +247,7 @@ print(result["data"][0]["url"])
 
 ## 9. 调试建议
 
-1. 先使用 `grok-imagine-image` 做最小请求。
+1. 先使用 `grok-imagine-image-quality` 做最小生图请求，再测编辑。
 2. 确认请求路径为 `/v1/images/generations` 或 `/v1/images/edits`。
 3. 确认认证头格式为 `Bearer YOUR_API_KEY`。
 4. 确认 `size` 使用支持列表中的值。

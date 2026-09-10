@@ -319,7 +319,7 @@ content[].text
 | 图片类型 | 建议先填 |
 |---|---|
 | OpenAI 图片 | `gpt-image-2` |
-| Grok 图片 | `grok-imagine-1.0` |
+| Grok 图片 | `grok-imagine-image-quality` |
 
 #### 请求
 
@@ -367,9 +367,11 @@ Body：
 
 ### POST `/v1/images/edits`
 
-用途：图片编辑、局部重绘、遮罩编辑。这个接口通常需要 `multipart/form-data`。
+用途：图片编辑、局部重绘、遮罩编辑。这个接口通常需要 `multipart/form-data`。Grok 编辑也使用 `grok-imagine-image-quality`，必须上传本地图片文件，不能传图片 URL。
 
 #### 请求示例
+
+OpenAI 图片：
 
 ```bash
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
@@ -377,6 +379,16 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
   -F 'model=gpt-image-2' \
   -F 'prompt=把图片背景改成干净的白色' \
   -F 'image=@input.png'
+```
+
+Grok 图片：
+
+```bash
+curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
+  -H "Authorization: Bearer $SUBLB_API_KEY" \
+  -F 'model=grok-imagine-image-quality' \
+  -F 'prompt=将蓝色圆形改成红色方形' \
+  -F 'image=@input.png;type=image/png'
 ```
 
 #### 成功判断

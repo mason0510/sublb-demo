@@ -144,9 +144,10 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/models" \
 | `codex-pro（按量付费）` | OpenAI | 按量 | OpenAI / Codex 按量 Pro 档 | `/v1/chat/completions`、`/v1/responses` | `gpt-5.5`、`gpt-5.4`、`gpt-5.4-mini`、`gpt-5.3-codex-spark` | Chat、Responses 通过 |
 | `DeepSeek Basic` | OpenAI-compatible | 订阅 / 专属 | DeepSeek 通用接入 | `/v1/chat/completions`、`/v1/responses` | Chat: `deepseek-v4-flash`、`deepseek-v4-pro`；Responses: `deepseek-v4-flash` | Chat 两个模型通过；Responses flash 通过 |
 | `deepseek` | OpenAI-compatible | 按量 | DeepSeek 按量接入 | `/v1/responses` | `deepseek-v4-pro` | Responses pro 通过；建议优先使用 `/v1/responses` |
-| `Grok 文本和图片` | Grok | 按量 | Grok 文本、Grok 生图 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片请按图片接口单独测试 |
-| `Grok-codex 文图统一月订阅20260430(普通)` | Grok | 订阅 / 专属 | Grok 文图统一普通套餐 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片请按图片接口单独测试 |
-| `Grok-codex 文图统一月订阅20260430(高级)` | Grok | 订阅 / 专属 | Grok 文图统一高级套餐 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-1.0` | 文本通过；图片请按图片接口单独测试 |
+| `Grok-Image 按量套餐` | Grok | 按量 | Grok 生图、Grok 图片编辑 | 图片：`/v1/images/generations`、`/v1/images/edits` | `grok-imagine-image-quality` | 生图、编辑通过 |
+| `Grok 文本和图片` | Grok | 按量 | Grok 文本、Grok 生图 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-image-quality` | 文本通过；图片请按图片接口单独测试 |
+| `Grok-codex 文图统一月订阅20260430(普通)` | Grok | 订阅 / 专属 | Grok 文图统一普通套餐 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-image-quality` | 文本通过；图片请按图片接口单独测试 |
+| `Grok-codex 文图统一月订阅20260430(高级)` | Grok | 订阅 / 专属 | Grok 文图统一高级套餐 | 文本：`/v1/chat/completions`；图片：`/v1/images/generations` | 文本：`grok-4.1-fast`；图片：`grok-imagine-image-quality` | 文本通过；图片请按图片接口单独测试 |
 | `claudecode特价` | Anthropic | 按量 | Claude 原生 Messages、Claude Fable 5 | `/v1/messages`；`/v1/responses` 非流式 JSON | `claude-fable-5`、`claude-haiku-4-5-20251001`、`claude-opus-4-6/4-7/4-8`、`claude-sonnet-4-6` | Messages 非流式 6 个模型通过；`claude-fable-5` Messages stream 通过；Responses 非流式通过 |
 
 ### 2.2 OpenAI 在线模型
@@ -314,9 +315,10 @@ POST /v1/images/generations
 | 分组 | 模型 | 说明 |
 |---|---|---|
 | `open-img分组包月` | `gpt-image-2` | OpenAI 图片生成 |
-| `Grok 文本和图片` | `grok-imagine-1.0` | Grok 图片生成 |
-| `Grok-codex 文图统一月订阅20260430(普通)` | `grok-imagine-1.0` | Grok 图片生成 |
-| `Grok-codex 文图统一月订阅20260430(高级)` | `grok-imagine-1.0` | Grok 图片生成 |
+| `Grok-Image 按量套餐` | `grok-imagine-image-quality` | Grok 图片生成 |
+| `Grok 文本和图片` | `grok-imagine-image-quality` | Grok 图片生成 |
+| `Grok-codex 文图统一月订阅20260430(普通)` | `grok-imagine-image-quality` | Grok 图片生成 |
+| `Grok-codex 文图统一月订阅20260430(高级)` | `grok-imagine-image-quality` | Grok 图片生成 |
 
 ```bash
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/generations" \
@@ -331,7 +333,9 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/generations" \
   }'
 ```
 
-OpenAI 图片通常读取 `data[0].b64_json`；Grok 图片通常读取 `data[0].url`。
+OpenAI 图片通常读取 `data[0].b64_json`；Grok 图片通常读取 `data[0].url`。Grok 生图请先填 `grok-imagine-image-quality`。
+
+Grok 支持尺寸：`1024x1024`、`1024x1792`、`1280x720`、`1792x1024`、`720x1280`。
 
 ### 5.2 Edit image
 
@@ -339,7 +343,9 @@ OpenAI 图片通常读取 `data[0].b64_json`；Grok 图片通常读取 `data[0].
 POST /v1/images/edits
 ```
 
-适用于 `gpt-image-2` 图片编辑。
+OpenAI 图片编辑使用 `gpt-image-2`。Grok 图片编辑使用 `grok-imagine-image-quality`。编辑请求必须是 `multipart/form-data`，`image` 必须是本地文件，不能传图片 URL。
+
+OpenAI：
 
 ```bash
 curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
@@ -350,6 +356,18 @@ curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
   -F "image=@./source.png" \
   -F "size=1024x1024" \
   -F "response_format=b64_json"
+```
+
+Grok：
+
+```bash
+curl --noproxy '*' "$SUBLB_BASE_URL/v1/images/edits" \
+  -H "Authorization: Bearer $SUBLB_API_KEY" \
+  -H "Accept: application/json" \
+  -F "model=grok-imagine-image-quality" \
+  -F "prompt=将蓝色圆形改成红色方形" \
+  -F "image=@./source.png;type=image/png" \
+  -F "size=1024x1024"
 ```
 
 ---

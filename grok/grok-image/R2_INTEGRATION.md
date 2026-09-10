@@ -69,20 +69,20 @@ Authorization: Bearer YOUR_API_KEY
 当前模型白名单建议：
 
 ```text
+grok-imagine-image-quality
 grok-imagine-image
 grok-imagine-image-2.0
-grok-imagine-image-quality
 ```
 
 模型定位：
 
 | 模型 | 用途 | 默认建议 |
 |---|---|---|
-| `grok-imagine-image` | 标准图片生成与编辑 | 通用默认模型 |
-| `grok-imagine-image-2.0` | 新版图片生成模型 | 需要新版质量/能力时使用 |
-| `grok-imagine-image-quality` | 高质量图片生成模型 | 对细节、质感要求较高时使用 |
+| `grok-imagine-image-quality` | 图片生成与编辑 | 当前默认模型 |
+| `grok-imagine-image` | 图片生成 | 不要当默认；生图不稳定，编辑未作为可用口径 |
+| `grok-imagine-image-2.0` | 历史模型名 | 仅保留白名单兼容，不要当新默认 |
 
-> `grok-imagine-image-2.0` 已在历史 smoke case 中作为 `/v1/images/generations` 的请求模型出现。`grok-imagine-image-quality` 是新增模型名，接入时应同时加入模型白名单、模型映射、计费配置和前端模型目录。`grok-imagine-1.0` 曾出现模型不可用或上游 503，不建议作为新默认模型。
+> 对外用户文档与套餐简介以 `grok-imagine-image-quality` 为默认。`grok-imagine-1.0`、`grok-imagine-1.0-edit` 不要当作新默认模型。
 
 ### 2.3 图片编辑
 
@@ -95,12 +95,12 @@ Authorization: Bearer YOUR_API_KEY
 当前编辑入口兼容以下模型：
 
 ```text
+grok-imagine-image-quality
 grok-imagine-image
 grok-imagine-image-2.0
-grok-imagine-image-quality
 ```
 
-> 早期测试使用 `grok-imagine-1.0-edit` 返回过 502。当前套餐说明与实测路径以 `grok-imagine-image` 为准，服务端应保留可配置模型映射。
+> 编辑默认模型与生图一致，使用 `grok-imagine-image-quality`。服务端应保留可配置模型映射。
 
 ---
 
@@ -110,7 +110,7 @@ grok-imagine-image-quality
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---:|---|
-| `model` | string | 是 | `grok-imagine-image`、`grok-imagine-image-2.0` 或 `grok-imagine-image-quality`。服务端应校验模型白名单。 |
+| `model` | string | 是 | 默认 `grok-imagine-image-quality`。白名单可同时保留 `grok-imagine-image`、`grok-imagine-image-2.0`。 |
 | `prompt` | string | 是 | 图片描述。建议限制长度并拒绝空字符串。 |
 | `n` | integer | 否 | 生成数量。推荐默认 `1`，当前套餐优先按单图处理。 |
 | `size` | string | 否 | 图片尺寸。默认 `1024x1024`。 |
@@ -139,7 +139,7 @@ curl -X POST 'https://chainfuel.tap365.org/v1/images/generations' \
   -H 'Authorization: Bearer YOUR_API_KEY' \
   -H 'Content-Type: application/json' \
   --data-binary '{
-    "model": "grok-imagine-image",
+    "model": "grok-imagine-image-quality",
     "prompt": "一只小橘猫坐在蓝色机器人旁边，简洁科技插画风格，无文字",
     "n": 1,
     "size": "1024x1024"
@@ -154,7 +154,7 @@ curl -X POST 'https://chainfuel.tap365.org/v1/images/generations' \
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---:|---|
-| `model` | string | 是 | `grok-imagine-image`、`grok-imagine-image-2.0` 或 `grok-imagine-image-quality`。 |
+| `model` | string | 是 | 默认 `grok-imagine-image-quality`。 |
 | `prompt` | string | 是 | 编辑指令，例如“把蓝色圆形改成红色方形”。 |
 | `image` | file | 是 | 本地图片文件，不能把远程 URL 字符串放进该字段。 |
 | `size` | string | 否 | 目标尺寸；使用支持尺寸白名单。 |
@@ -172,7 +172,7 @@ curl -X POST 'https://chainfuel.tap365.org/v1/images/generations' \
 ```bash
 curl -X POST 'https://chainfuel.tap365.org/v1/images/edits' \
   -H 'Authorization: Bearer YOUR_API_KEY' \
-  -F 'model=grok-imagine-image' \
+  -F 'model=grok-imagine-image-quality' \
   -F 'prompt=将蓝色圆形改成红色方形，保持背景和构图不变' \
   -F 'size=1024x1024' \
   -F 'n=1' \

@@ -76,6 +76,7 @@
 - Claude 不要默认接到 `/v1/chat/completions`，优先使用 `/v1/messages`。
 - Gemini 原生接口不要当成 OpenAI-compatible 接口。
 - `/v1/models` 只能说明“看得到模型”，不能证明“业务接口可用”。
+- Grok 生图和编辑都先用 `grok-imagine-image-quality`。编辑必须 multipart 上传本地文件，不能把图片 URL 当文件字段。
 
 ---
 
@@ -88,7 +89,7 @@
 | Grok 文本 | `grok-4.1-fast` |
 | Claude 文本 | `claude-fable-5` |
 | OpenAI 图片 | `gpt-image-2` |
-| Grok 图片 | `grok-imagine-1.0` |
+| Grok 图片 | `grok-imagine-image-quality` |
 
 如果用户的 key 绑定了特定分组，以用户实际分组支持的模型为准。
 
