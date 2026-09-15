@@ -7,7 +7,8 @@ SubLB API 的公开 Demo 仓库，用一套 Base URL 演示 Grok、OpenAI、Gemi
 - Base URL：`https://sub-lb.tap365.org`
 - 认证：`Authorization: Bearer <YOUR_SUBLB_API_KEY>`
 - 完整文档：[sublb_grok_openai_gemini_claude_deepseek_API文档.md](sublb_grok_openai_gemini_claude_deepseek_API文档.md)
-- `gpt-image-2` 生图、修图、遮罩编辑专项：[gpt-image-2使用指南.md](gpt-image-2使用指南.md)
+- `gpt-image-2` / `gpt-image-2.5`（含 flare / sunburst）生图、修图专项：[gpt-image-2使用指南.md](gpt-image-2使用指南.md)
+- 可运行示例：[examples/gpt-image-2-1k-2k/](examples/gpt-image-2-1k-2k/)
 - 生图新手使用指南：[生图新手使用指南.md](生图新手使用指南.md)
 - Turing / turing-sdk 使用指南：[docs/turing-and-sdk-usage.md](docs/turing-and-sdk-usage.md)
 

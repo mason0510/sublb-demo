@@ -12,7 +12,13 @@
 - 图片编辑 / 图生图 / 修图：`POST /v1/images/edits`
 - 遮罩局部编辑：`POST /v1/images/edits`，multipart 中增加 `mask=@mask.png`
 
-不要把模型名写成 `gpt-img-2` 或 `gpt-image-edit`。当前推荐与实测模型名是：`gpt-image-2`。
+不要把模型名写成 `gpt-img-2` 或 `gpt-image-edit`。可用模型：
+
+- `gpt-image-2`（默认，生图/编辑）
+- `gpt-image-2-1k` / `gpt-image-2-2k` / `gpt-image-2-4k`（尺寸别名，不保证原生 1K/2K/4K 像素）
+- `gpt-image-2.5` / `gpt-image-2.5-flare` / `gpt-image-2.5-sunburst`（同一套 Images / Images Edits 接口）
+
+可运行示例见 [`examples/gpt-image-2-1k-2k/`](examples/gpt-image-2-1k-2k/)。
 
 ## 2. Base URL 与鉴权
 
