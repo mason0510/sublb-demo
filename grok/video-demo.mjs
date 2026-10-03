@@ -1,3 +1,11 @@
+/**
+ * Grok 视频 demo（SubLB OpenAI-compatible）
+ *
+ * 竖屏：VIDEO_ASPECT_RATIO=9:16 VIDEO_RESOLUTION=720p
+ * 横屏：VIDEO_ASPECT_RATIO=16:9（默认）
+ * 不要传 size=720x1280（上游 size 像素枚举不认竖屏对，会 422）
+ * 接口：POST /v1/videos/generations
+ */
 const BASE_URL = process.env.VIDEO_BASE_URL || "https://YOUR_SUBLB_DOMAIN";
 const API_KEY = process.env.VIDEO_API_KEY;
 const VIDEO_SECONDS = Number(process.env.VIDEO_SECONDS || 3);

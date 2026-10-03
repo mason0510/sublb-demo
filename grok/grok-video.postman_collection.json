@@ -9,7 +9,7 @@
   ],
   "item": [
     {
-      "name": "文生视频",
+      "name": "文生视频（横屏 16:9）",
       "request": {
         "method": "POST",
         "header": [
@@ -21,7 +21,19 @@
       }
     },
     {
-      "name": "单图生视频",
+      "name": "文生视频（竖屏 9:16，推荐写法）",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"model\": \"grok-video\",\n  \"prompt\": \"暖光客厅边桌一角，陶瓷小猫摆件，镜头缓慢推近\",\n  \"duration\": 6,\n  \"aspect_ratio\": \"9:16\",\n  \"resolution\": \"720p\"\n}" },
+        "url": "{{base_url}}/v1/videos/generations"
+      }
+    },
+    {
+      "name": "单图生视频（横屏）",
       "request": {
         "method": "POST",
         "header": [
@@ -32,6 +44,19 @@
         "url": "{{base_url}}/v1/videos/generations"
       }
     },
+    {
+      "name": "单图生视频（竖屏 9:16）",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{api_key}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"model\": \"grok-video-1.5\",\n  \"prompt\": \"镜头缓慢靠近，灯光和阴影自然变化\",\n  \"image_url\": \"https://YOUR_SUBLB_DOMAIN/input.png\",\n  \"duration\": 6,\n  \"aspect_ratio\": \"9:16\",\n  \"resolution\": \"720p\"\n}" },
+        "url": "{{base_url}}/v1/videos/generations"
+      }
+    },
+
     {
       "name": "多参考图视频（最多 7 张）",
       "request": {
