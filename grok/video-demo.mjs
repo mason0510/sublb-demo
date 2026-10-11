@@ -1,12 +1,13 @@
 /**
  * Grok 视频 demo（SubLB OpenAI-compatible）
  *
- * 竖屏：VIDEO_ASPECT_RATIO=9:16 VIDEO_RESOLUTION=720p
- * 横屏：VIDEO_ASPECT_RATIO=16:9（默认）
- * 不要传 size=720x1280（上游 size 像素枚举不认竖屏对，会 422）
+ * 文生：传 aspect_ratio + resolution，不传 size。竖屏用 VIDEO_ASPECT_RATIO=9:16。
+ * 单图：不传 resolution / size / aspect_ratio，成片跟随参考图。
+ * 多图：reference_image_urls 字符串数组，时长用 seconds。不要同时传 image_url。
+ * 本脚本不传 size。
  * 接口：POST /v1/videos/generations
  */
-const BASE_URL = process.env.VIDEO_BASE_URL || "https://YOUR_SUBLB_DOMAIN";
+const BASE_URL = process.env.VIDEO_BASE_URL || "https://chainfuel.tap365.org";
 const API_KEY = process.env.VIDEO_API_KEY;
 const VIDEO_SECONDS = Number(process.env.VIDEO_SECONDS || 3);
 const VIDEO_ASPECT_RATIO = process.env.VIDEO_ASPECT_RATIO || "16:9";
@@ -47,17 +48,20 @@ async function request(path, options = {}) {
 }
 
 function createVideoRequest() {
+  const singleImage = REFERENCE_IMAGES.length === 1;
   const body = {
-    model: process.env.VIDEO_MODEL || (REFERENCE_IMAGES.length > 1 ? "grok-image-video" : "grok-video"),
+    model: process.env.VIDEO_MODEL || (REFERENCE_IMAGES.length > 1 ? "grok-image-video" : singleImage ? "grok-video-1.5" : "grok-video"),
     prompt: process.env.VIDEO_PROMPT || "A small white cube rotates slowly on a dark studio background.",
-    aspect_ratio: VIDEO_ASPECT_RATIO,
-    resolution: VIDEO_RESOLUTION,
   };
   if (REFERENCE_IMAGES.length > 1) body.seconds = VIDEO_SECONDS;
   else body.duration = VIDEO_SECONDS;
-  if (REFERENCE_IMAGES.length === 1) body.image_url = REFERENCE_IMAGES[0];
+  if (!singleImage) {
+    body.aspect_ratio = VIDEO_ASPECT_RATIO;
+    body.resolution = VIDEO_RESOLUTION;
+  }
+  if (singleImage) body.image_url = REFERENCE_IMAGES[0];
   if (REFERENCE_IMAGES.length > 1) {
-    body.reference_images = REFERENCE_IMAGES.slice(0, 7).map((url) => ({ url }));
+    body.reference_image_urls = REFERENCE_IMAGES.slice(0, 7);
   }
   return body;
 }
