@@ -41,7 +41,7 @@ Content-Type: application/json
 | 单图 `grok-video-1.5` | `duration` | 跟随参考图 | `resolution`、`size`、`aspect_ratio` |
 | 多图 `grok-image-video` | `seconds` | `aspect_ratio` + `resolution` | `image_url`、`input_reference`、`size` |
 
-竖屏传 `aspect_ratio: "9:16"`。`size` 可以不传；要传只能是 `848x480`、`1696x960`、`1280x720`、`1920x1080`。
+`aspect_ratio`：`1:1，16:9，9:16，4:3，3:4，3:2，2:3，21:9，5:2`。默认 `16:9`。竖屏用 `9:16`。`size` 可以不传；要传只能是 `848x480`、`1696x960`、`1280x720`、`1920x1080`。
 
 单次时长不超过 15 秒。下面的 3 秒、16:9、480p 是示例，不是唯一规格。
 
