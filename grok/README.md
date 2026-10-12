@@ -52,7 +52,7 @@ Content-Type: application/json
 ```json
 {
   "model": "grok-video",
-  "prompt": "一把椅子放在暖色灯光下，镜头缓慢环绕",
+  "prompt": "0 到 3 秒，镜头缓慢推近椅子，暖光停在椅背。",
   "duration": 3,
   "aspect_ratio": "16:9",
   "resolution": "480p"
@@ -67,7 +67,7 @@ curl -X POST "https://chainfuel.tap365.org/v1/videos/generations" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "grok-video",
-    "prompt": "暖光客厅边桌一角，陶瓷小猫摆件，镜头缓慢推近",
+    "prompt": "0 到 3 秒，镜头推近陶瓷小猫，暖光停在桌面。",
     "duration": 3,
     "aspect_ratio": "9:16",
     "resolution": "480p"
@@ -81,7 +81,7 @@ curl -X POST "https://chainfuel.tap365.org/v1/videos/generations" \
 ```json
 {
   "model": "grok-video-1.5",
-  "prompt": "镜头缓慢靠近，灯光和阴影自然变化",
+  "prompt": "0 到 3 秒，镜头缓慢靠近，暖光停在主体上。",
   "image_url": "https://example.com/input.png",
   "duration": 3
 }
@@ -96,7 +96,7 @@ curl -X POST "https://chainfuel.tap365.org/v1/videos/generations" \
 ```json
 {
   "model": "grok-image-video",
-  "prompt": "根据多张参考图生成流畅的高端产品展示视频，使用奢华灯光和简洁背景",
+  "prompt": "前 5 秒镜头环绕产品，中间 5 秒灯光慢慢变亮，最后 5 秒拉远，背景保持浅米色。",
   "seconds": 15,
   "aspect_ratio": "16:9",
   "resolution": "720p",
@@ -107,7 +107,7 @@ curl -X POST "https://chainfuel.tap365.org/v1/videos/generations" \
 }
 ```
 
-多图之间尽量保持主体、风格或场景相关。提示词写清镜头、主体动作、灯光和场景变化。
+多图之间尽量保持主体、风格或场景相关。提示词必须带时间，并且落在片长内。同时写清镜头运动、主体动作、灯光和场景变化。
 
 ## 查询和下载
 

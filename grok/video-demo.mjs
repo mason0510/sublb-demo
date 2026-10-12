@@ -51,7 +51,7 @@ function createVideoRequest() {
   const singleImage = REFERENCE_IMAGES.length === 1;
   const body = {
     model: process.env.VIDEO_MODEL || (REFERENCE_IMAGES.length > 1 ? "grok-image-video" : singleImage ? "grok-video-1.5" : "grok-video"),
-    prompt: process.env.VIDEO_PROMPT || "A small white cube rotates slowly on a dark studio background.",
+    prompt: process.env.VIDEO_PROMPT || "0 到 3 秒，白色小方块在暗色背景上缓慢转完一圈。",
   };
   if (REFERENCE_IMAGES.length > 1) body.seconds = VIDEO_SECONDS;
   else body.duration = VIDEO_SECONDS;
