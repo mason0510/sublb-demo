@@ -109,6 +109,38 @@ curl -X POST "https://chainfuel.tap365.org/v1/videos/generations" \
 
 多图之间尽量保持主体、风格或场景相关。提示词必须带时间，并且落在片长内。同时写清镜头运动、主体动作、灯光和场景变化。
 
+## 预设音色
+
+`reference_audios` 可选。不传就不要带这个字段。传了才指定音色。一次最多 3 个。没有单独的绑定字段，靠提示词编号对上：
+
+- `reference_audios[0]` = `<AUDIO_0>`
+- `reference_audios[1]` = `<AUDIO_1>`
+- `reference_audios[2]` = `<AUDIO_2>`
+- 人物用 `<IMAGE_0>`、`<IMAGE_1>`。若另外传了首帧 `image`，它占 `<IMAGE_0>`，参考图从 `<IMAGE_1>` 开始。
+
+```json
+{
+  "model": "grok-video",
+  "prompt": "女主来自 <IMAGE_0>，用 <AUDIO_0> 的声音。0 到 5 秒她说「不要靠近」。5 到 10 秒另一人用 <AUDIO_1> 的声音靠近，她躲开。",
+  "duration": 10,
+  "reference_image_urls": [
+    "https://example.com/person.png"
+  ],
+  "reference_audios": [
+    { "voice_id": "eve" },
+    { "voice_id": "leo" }
+  ]
+}
+```
+
+`voice_id` 大小写不敏感。视频模型不收 `aurora`、`liora`。其余公开预设：
+
+`carina，zagan，helix，orion，luna，iris，altair，zenith，perseus，helios，lux，kepler，rigel，cosmo，celeste，ursa，sirius，lumen，castor，naksh，atlas，ara，eve，leo，rex，sal`
+
+默认配音不用传这个字段，模型会自己出声。要锁音色才传。自己的音频文件不能当视频参考声，那是合作方申请项。
+
+试听没有官方样音包，官方 GitHub 也不放 mp3。页面播放在 <https://x.ai/api/voice>。要落成本地文件，打 `POST /v1/tts` 自己存。
+
 ## 查询和下载
 
 ```bash
@@ -135,3 +167,10 @@ VIDEO_REFERENCE_IMAGES="https://example.com/input.png" VIDEO_API_KEY=<YOUR_API_K
 一张图走单图生视频，不传 `resolution` 和 `size`。两张及以上走多参考图，字段是 `reference_image_urls`。
 
 Postman 集合：`grok-video.postman_collection.json`。
+
+## TODO
+
+- 线上 Grok Native 尚未发布 `reference_audios` 转发。本地组包已接，不传不写字段；发版前线上仍会丢掉。
+- 没有官方样音包。试听包未做。
+- 页面「参考视频」「参考音频」当前生成用不上，未改。
+- 分组说明尚未写入本节。
