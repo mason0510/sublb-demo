@@ -17,7 +17,7 @@ Content-Type: application/json
 
 | 需求 | 模型 | 图片 |
 |---|---|---|
-| 输入文字直接生成 | `grok-video` | 不需要 |
+| 输入文字生成，必须带 duration | `grok-video` | 不需要图片。改画幅再传 aspect_ratio，改清晰度再传 resolution，不要传 size |
 | 让一张图动起来 | `grok-video-1.5` | 必须传公网 `image_url` |
 | 综合多张参考图 | `grok-image-video` | `reference_image_urls`，最多 7 张，最长 15 秒 |
 
