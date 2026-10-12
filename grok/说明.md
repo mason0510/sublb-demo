@@ -17,7 +17,7 @@ Content-Type: application/json
 
 | 需求 | 模型 | 图片 |
 |---|---|---|
-| 输入文字生成，必须带 duration | `grok-video` | 不需要图片。改画幅再传 aspect_ratio，改清晰度再传 resolution，不要传 size |
+| 文字或带图 | `grok-video` | 可传 prompt、duration 或 seconds、aspect_ratio、resolution、size、image_url、reference_image_urls。必传时长 |
 | 让一张图动起来 | `grok-video-1.5` | 必须传公网 `image_url` |
 | 综合多张参考图 | `grok-image-video` | `reference_image_urls`，最多 7 张，最长 15 秒 |
 
@@ -37,11 +37,11 @@ Content-Type: application/json
 
 | 场景 | 时长字段 | 画面 | 不要传 |
 |---|---|---|---|
-| 文生 `grok-video` | `duration` | `aspect_ratio` + `resolution` | `size` |
+| `grok-video` | `duration` 或 `seconds` | `aspect_ratio`、`resolution`、`size` 都可传 | `reference_images` 对象 |
 | 单图 `grok-video-1.5` | `duration` | 跟随参考图 | `resolution`、`size`、`aspect_ratio` |
 | 多图 `grok-image-video` | `seconds` | `aspect_ratio` + `resolution` | `image_url`、`input_reference`、`size` |
 
-竖屏文生把 `aspect_ratio` 写成 `9:16`，仍然不要传 `size`。
+竖屏传 `aspect_ratio: "9:16"`。`size` 可以不传；要传只能是 `848x480`、`1696x960`、`1280x720`、`1920x1080`。
 
 单次时长不超过 15 秒。下面的 3 秒、16:9、480p 是示例，不是唯一规格。
 
