@@ -15,16 +15,22 @@
 
 ## ChainFuel 专属 API Key
 
+这把 key 是公开的，给用户测试。
+
 ```text
 chainfuel_e79b84a5456778e1bc5410033364fc88ccb38fa7223a9de7af032b153b5f4ceb
 ```
 
-格式是 `chainfuel_` 加 64 位小写十六进制，对应 32 字节随机数。这是本文档专用 key，不是管理员 key。
+格式是 `chainfuel_` 加 64 位小写十六进制。它不是管理员 key。
 
 ```http
 x-api-key: chainfuel_e79b84a5456778e1bc5410033364fc88ccb38fa7223a9de7af032b153b5f4ceb
 Authorization: Bearer chainfuel_e79b84a5456778e1bc5410033364fc88ccb38fa7223a9de7af032b153b5f4ceb
 ```
+
+想调用，联系微信 `zhcmason`。
+
+![微信 zhcmason](wechat-zhcmason.jpg)
 
 ---
 
