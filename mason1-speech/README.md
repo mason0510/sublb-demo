@@ -9,9 +9,22 @@
 | 语音转文字 | Whisper large-v3 | `https://whisper.mwcpool.uk` | 音频 URL 或上传文件 | 文本 |
 | 文字转语音 | IndexTTS2 | `https://indextts.mwcpool.uk` | 文本，可选参考音色 | 音频文件 |
 
-不要把录音、转写正文、口播稿、API 密码写进本仓库。示例只用占位句和占位路径。
+不要把录音、转写正文、口播稿、管理员密钥或 Basic Auth 密码写进本仓库。下面这把是本文档的 ChainFuel 专属 key。
 
 核对时间：2026-10-24。入口和字段以当天只读探测为准；带认证的转写成功记录来自 2026-09-01 的短音频验收。调用前仍要用自己的短样本再验一次。
+
+## ChainFuel 专属 API Key
+
+```text
+chainfuel_e79b84a5456778e1bc5410033364fc88ccb38fa7223a9de7af032b153b5f4ceb
+```
+
+格式是 `chainfuel_` 加 64 位小写十六进制，对应 32 字节随机数。这是本文档专用 key，不是管理员 key。
+
+```http
+x-api-key: chainfuel_e79b84a5456778e1bc5410033364fc88ccb38fa7223a9de7af032b153b5f4ceb
+Authorization: Bearer chainfuel_e79b84a5456778e1bc5410033364fc88ccb38fa7223a9de7af032b153b5f4ceb
+```
 
 ---
 
@@ -34,7 +47,7 @@ export WHISPER_BASIC_USER="whisper"
 export WHISPER_BASIC_PASSWORD="从安全入口读取"
 ```
 
-如果 Basic Auth 已经通过，后端仍返回 401，再补可选头 `x-admin-api-key`。当前公网路径以 Basic Auth 为准。密钥不要写进仓库。
+如果 Basic Auth 已经通过，后端仍返回 401，再补可选头 `x-admin-api-key`。当前公网路径以 Basic Auth 为准。管理员密钥和 Basic Auth 密码不要写进仓库。ChainFuel 专属 key 见上文。
 
 健康检查是 `GET /`，不是 `GET /health`。`GET /` 只代表进程还在。没有真实音频返回 `status=completed` 且 `output.text` 非空，不要当成转写可用。
 
@@ -47,6 +60,7 @@ export WHISPER_BASIC_PASSWORD="从安全入口读取"
 ```bash
 curl -sS -w '\nHTTP_STATUS=%{http_code}\n' \
   -u "$WHISPER_BASIC_USER:$WHISPER_BASIC_PASSWORD" \
+  -H 'x-api-key: chainfuel_e79b84a5456778e1bc5410033364fc88ccb38fa7223a9de7af032b153b5f4ceb' \
   -X POST 'https://whisper.mwcpool.uk/upload' \
   -F 'file=@/absolute/path/sample.m4a' \
   -F 'task=transcribe' \
@@ -65,6 +79,7 @@ curl -sS -w '\nHTTP_STATUS=%{http_code}\n' \
 ```bash
 curl -sS -w '\nHTTP_STATUS=%{http_code}\n' \
   -u "$WHISPER_BASIC_USER:$WHISPER_BASIC_PASSWORD" \
+  -H 'x-api-key: chainfuel_e79b84a5456778e1bc5410033364fc88ccb38fa7223a9de7af032b153b5f4ceb' \
   -X POST 'https://whisper.mwcpool.uk/' \
   -H 'content-type: application/json' \
   -d '{
@@ -217,7 +232,10 @@ python3 -m pip install -U gradio_client
 ```python
 from gradio_client import Client
 
-client = Client("https://indextts.mwcpool.uk")
+client = Client(
+    "https://indextts.mwcpool.uk",
+    headers={"X-API-Key": "chainfuel_e79b84a5456778e1bc5410033364fc88ccb38fa7223a9de7af032b153b5f4ceb"},
+)
 result = client.predict(
     text="这是一句接口连通性测试。",
     preset_voice="测试音色",
@@ -225,15 +243,6 @@ result = client.predict(
     api_name="/simple_tts",
 )
 print(result)
-```
-
-如果未认证被拒绝：
-
-```python
-client = Client(
-    "https://indextts.mwcpool.uk",
-    headers={"X-API-Key": "<INDEXTTS_API_KEY>"},
-)
 ```
 
 拿到文件后用 `ffprobe` 验收。没有时长、大小为 0，都不算合成成功。
