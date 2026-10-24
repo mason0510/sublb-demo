@@ -30,6 +30,7 @@ SubLB API 的公开 Demo 仓库。
 - `grok/README.md`：Grok 图片与视频接入、价格口径、异步轮询、注意事项
 - `grok/grok-image/README.md`：Grok 图片生成、图片编辑与 Cloudflare R2 结果转存
 - `seedance/README.md`：Seedance 视频接入、按次/按秒计费区分、对接 demo、注意事项
+- `mason1-speech/README.md`：mason1 语音转文字与文字转语音的调用方式。不是 SubLB `/v1` 接口
 
 一句话结论：
 
@@ -50,7 +51,8 @@ sublb-demo/
 ├── gemini/            # Gemini 说明
 ├── grok/              # Grok 说明
 ├── seedance/          # Seedance 视频说明
-└── anthropic/         # Claude / Anthropic 说明
+├── anthropic/         # Claude / Anthropic 说明
+└── mason1-speech/     # mason1 语音转文字 / 文字转语音，不是 SubLB /v1
 ```
 
 `.env.example`、`.gitignore`、`LICENSE` 是仓库必要文件，不是接口文档入口。
